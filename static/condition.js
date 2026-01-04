@@ -218,7 +218,7 @@ const state = {
   current: 0,
   photos: [null, null, null],
   itemType: "clothing",
-  lang: "en",
+  lang: "el",
 };
 
 const progressBar = document.getElementById("progress-bar");
@@ -519,7 +519,6 @@ function mockResponse() {
 async function evaluate() {
   nextBtn.disabled = true;
   nextBtn.textContent = t().evaluate;
-
   const form = new FormData();
   state.photos.forEach((file, idx) => {
     form.append(`photo${idx + 1}`, file, file.name);
@@ -567,7 +566,7 @@ function setYear() {
 }
 
 function applyStaticText() {
-  document.documentElement.lang = state.lang === "en" ? "en" : "el";
+  document.documentElement.lang = state.lang === "el" ? "el" : "en";
   const textMap = [
     ["brand-subtitle", t().brandSubtitle],
     ["nav-home", t().nav.home],
