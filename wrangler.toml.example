@@ -1,0 +1,6 @@
+name = "miranda-condition-rater"
+main = "worker.js"
+compatibility_date = "2026-01-04"
+
+# Set your API key as a secret (recommended):
+# wrangler secret put AI_API_KEY

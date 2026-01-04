@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Miranda — Creative Repairs & Alterations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@400;600;700;800&family=Caveat:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav-row">
+      <a class="brand" href="#hero">Miranda <i id="brand-subtitle">atelier</i></a>
+      <nav class="links" aria-label="Primary">
+        <a id="nav-home" href="#hero">Home</a>
+        <a id="nav-about" href="#about">About</a>
+        <a id="nav-work" href="#work">Work</a>
+        <a id="nav-contact" href="#contact">Contact</a>
+        <a href="condition.html" id="nav-condition">Condition Rater</a>
+      </nav>
+      <button class="lang-toggle" type="button" id="lang-toggle" aria-label="Switch language">GR</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="hero" class="hero">
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <p class="hand tag" id="hero-tag">Made-to-measure care</p>
+          <h1 class="display scribble-underline">Miranda</h1>
+          <p class="lead" id="hero-lead">Thoughtful, high-quality <strong>repairs & alterations</strong> from denim to wedding dresses and home textiles.</p>
+          <div class="hero-actions">
+            <a class="btn btn-stitch" id="hero-btn-primary" href="#contact">Book a fitting</a>
+            <a class="btn btn-secondary" id="hero-btn-secondary" href="#work">See the work</a>
+          </div>
+          <dl class="meta">
+            <div><dt id="hours-label">Hours</dt><dd id="hours-value">Mon–Fri, 09:00–15:00, 17:00–21:00</dd></div>
+            <div><dt id="location-label">Location</dt><dd id="location-value">Athens, Sepolia, GR</dd></div>
+          </dl>
+        </div>
+        <div class="paper torn hero-note" aria-label="Handmade promise">
+          <p class="muted hand" id="hero-quote">“We keep the original look—minimal visible change, maximum care.”</p>
+          <ul id="hero-note-list">
+            <li>Invisible mending for denim</li>
+            <li>Hand-finished hems & bridal adjustments</li>
+            <li>Home textiles resized with care</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section">
+      <div class="container about-grid paper torn">
+        <div>
+          <h2 class="h2 scribble-underline" id="about-title">About the atelier</h2>
+          <p class="lead" id="about-lead">I’m Miranda, a tailor who believes every garment and fabric carries a story. My work keeps your favorites in rotation—stitched with restraint so the original character shines.</p>
+          <div class="pill-row">
+            <span class="pill" id="pill-1">Tailored fits</span>
+            <span class="pill" id="pill-2">Mindful mending</span>
+            <span class="pill" id="pill-3">Home textiles</span>
+          </div>
+        </div>
+        <div class="note card">
+          <h3 class="h3" id="specialties-title">Specialties</h3>
+          <ul id="specialties-list">
+            <li>Bridal and evening wear adjustments</li>
+            <li>Denim darning, color-matched threads</li>
+            <li>Curtain and upholstery tailoring</li>
+          </ul>
+          <p class="muted micro" id="about-note">Future-ready: AI-assisted fit notes coming soon.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="work" class="section alt">
+      <div class="container">
+        <header class="section-head">
+          <h2 class="h2 scribble-underline" id="work-heading">Before &amp; After</h2>
+          <p class="muted hand" id="work-subtitle">Small miracles, stitched by hand.</p>
+        </header>
+
+        <div class="gallery-wrap paper torn">
+          <div class="gallery-grid">
+            <div class="ba">
+              <figure class="frame polaroid">
+                <img id="before-img" src="assets/images/denim_before.webp" alt="Denim repair — before">
+                <figcaption id="before-label">Before</figcaption>
+              </figure>
+              <figure class="frame polaroid">
+                <img id="after-img" src="assets/images/denim_after.webp" alt="Denim repair — after">
+                <figcaption id="after-label">After</figcaption>
+              </figure>
+            </div>
+
+            <aside class="ba-aside">
+              <h3 class="h3" id="work-title">Denim repair</h3>
+              <p class="muted" id="work-note">Invisible patch & color-match stitching.</p>
+              <ul class="thumbs" role="list" aria-label="Choose example">
+                <li><button class="thumb active" data-index="0" aria-pressed="true" aria-label="Show denim repair"><img src="assets/images/denim_after.webp" alt=""></button></li>
+                <li><button class="thumb" data-index="1" aria-label="Show evening dress hem"><img src="assets/images/dress_after.webp" alt=""></button></li>
+                <li><button class="thumb" data-index="2" aria-label="Show curtain resizing"><img src="assets/images/curtain_after.webp" alt=""></button></li>
+              </ul>
+              <p class="micro hand">More before/after coming soon.</p>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects" class="section">
+      <div class="container card-grid">
+        <div class="card">
+          <h3 class="h3" id="card-1-title">Custom fits</h3>
+          <p class="muted" id="card-1-body">Waist, bust, and hem adjustments that honor the garment’s original lines.</p>
+        </div>
+        <div class="card">
+          <h3 class="h3" id="card-2-title">Repair & revive</h3>
+          <p class="muted" id="card-2-body">Mending, darning, and reinforcing high-wear areas with thread-matched care.</p>
+        </div>
+        <div class="card">
+          <h3 class="h3" id="card-3-title">Home textiles</h3>
+          <p class="muted" id="card-3-body">Curtains resized, cushions refreshed, and linens finished with neat seams.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="section alt contact-section">
+      <div class="container contact-grid">
+        <div>
+          <h2 class="h2 scribble-underline" id="contact-heading">Contact</h2>
+          <p id="contact-phone"><strong>Phone:</strong> +30 210 000 0000</p>
+          <p id="contact-email"><strong>Email:</strong> hello@miranda.example</p>
+          <p id="contact-address"><strong>Address:</strong> Placeholder St 12, Athens</p>
+          <!-- <p class="muted micro" id="contact-note">Future: AI-assisted intake for faster quotes and fit notes.</p> -->
+          <a class="btn btn-secondary" id="back-top" href="#hero">Back to top</a>
+        </div>
+
+        <form class="card form" aria-label="Contact form">
+          <h3 class="h3" id="form-title">Book a fitting</h3>
+          <label>
+            <span id="label-name">Name</span>
+            <input type="text" name="name" autocomplete="name" required>
+          </label>
+          <label>
+            <span id="label-email">Email</span>
+            <input type="email" name="email" autocomplete="email" required>
+          </label>
+          <label>
+            <span id="label-details">What do you need?</span>
+            <textarea name="details" rows="4" placeholder="Hem, repair, bridal fitting…" required></textarea>
+          </label>
+          <label>
+            <span id="label-photos">Upload reference photos</span>
+            <input type="file" name="photos" accept="image/*" multiple>
+          </label>
+          <button type="submit" class="btn btn-stitch" id="form-submit">Send request</button>
+          <p class="micro muted" id="form-note">This form is static for now. A backend will soon add AI-powered job intake.</p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-row">
+      <small id="footer-note">© <span id="year"></span> Miranda — Creative repairs & alterations</small>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="#about" id="footer-about">About</a>
+        <a href="#contact" id="footer-contact">Contact</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
