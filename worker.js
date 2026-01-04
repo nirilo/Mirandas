@@ -1,38 +1,52 @@
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    if (url.pathname !== "/api/evaluate") {
-      return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers: corsHeaders() });
+
+    if (url.hostname === "mirandas.gr") {
+      url.hostname = "www.mirandas.gr";
+      return Response.redirect(url.toString(), 301);
     }
+
+     if (url.pathname === "/evaluate" || url.pathname === "/evaluate/"|| url.pathname === "/condition/" || url.pathname === "/condition") {
+      url.pathname = "/condition.html";
+      request = new Request(url.toString(), request);
+      return env.ASSETS.fetch(request);
+    }
+
+    if (url.pathname !== "/api/evaluate") {
+      // return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers: corsHeaders() });
+      return env.ASSETS.fetch(request);
+    }
+
     if (request.method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: corsHeaders() });
+      return new Response(null, { status: 204, headers: corsHeaders(request) });
     }
 
     if (request.method !== "POST") {
-      return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: corsHeaders() });
+      return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: corsHeaders(request) });
     }
 
     const rateStatus = rateLimit(request);
     if (!rateStatus.ok) {
-      return new Response(JSON.stringify({ error: "Too many requests. Please slow down." }), { status: 429, headers: corsHeaders() });
+      return new Response(JSON.stringify({ error: "Too many requests. Please slow down." }), { status: 429, headers: corsHeaders(request) });
     }
 
     const contentType = request.headers.get("content-type") || "";
     if (!contentType.toLowerCase().includes("multipart/form-data")) {
-      return new Response(JSON.stringify({ error: "Content-Type must be multipart/form-data" }), { status: 400, headers: corsHeaders() });
+      return new Response(JSON.stringify({ error: "Content-Type must be multipart/form-data" }), { status: 400, headers: corsHeaders(request) });
     }
 
     const contentLength = Number(request.headers.get("content-length") || 0);
     const MAX_BYTES = 15 * 1024 * 1024; // 15MB cap
     if (contentLength && contentLength > MAX_BYTES) {
-      return new Response(JSON.stringify({ error: "Payload too large" }), { status: 413, headers: corsHeaders() });
+      return new Response(JSON.stringify({ error: "Payload too large" }), { status: 413, headers: corsHeaders(request) });
     }
 
     let form;
     try {
       form = await request.formData();
     } catch (err) {
-      return new Response(JSON.stringify({ error: "Invalid form data" }), { status: 400, headers: corsHeaders() });
+      return new Response(JSON.stringify({ error: "Invalid form data" }), { status: 400, headers: corsHeaders(request) });
     }
 
     const photos = ["photo1", "photo2", "photo3"].map((key) => form.get(key));
@@ -40,30 +54,33 @@ export default {
 
     if (!itemType || !["clothing", "curtain", "other fabric"].includes(itemType)) {
       return new Response(JSON.stringify({
+        score: null,
         stage: null,
         label: "Unsupported item",
         confidence: 0,
         confidence_label: "low",
+        issues: [],
         issues_detected: [],
         repair_needed: false,
+        advice: "Only fabric items are supported. Choose clothing, curtain, or other fabric.",
         notes: "Only fabric items are supported. Choose clothing, curtain, or other fabric."
-      }), { status: 400, headers: corsHeaders() });
+      }), { status: 400, headers: corsHeaders(request) });
     }
 
     if (photos.some((p) => !isImageFile(p))) {
-      return new Response(JSON.stringify({ error: "All three images are required and must be images." }), { status: 400, headers: corsHeaders() });
+      return new Response(JSON.stringify({ error: "All three images are required and must be images." }), { status: 400, headers: corsHeaders(request) });
     }
 
     const MAX_FILE = 6 * 1024 * 1024; // 6MB per image (post compression expected)
     const totalBytes = photos.reduce((sum, file) => sum + (file.size || 0), 0);
     if (!totalBytes) {
-      return new Response(JSON.stringify({ error: "Images missing or empty." }), { status: 400, headers: corsHeaders() });
+      return new Response(JSON.stringify({ error: "Images missing or empty." }), { status: 400, headers: corsHeaders(request) });
     }
     if (totalBytes > MAX_BYTES) {
-      return new Response(JSON.stringify({ error: "Images too large after compression." }), { status: 413, headers: corsHeaders() });
+      return new Response(JSON.stringify({ error: "Images too large after compression." }), { status: 413, headers: corsHeaders(request) });
     }
     if (photos.some((p) => (p.size || 0) > MAX_FILE)) {
-      return new Response(JSON.stringify({ error: "A single image exceeds the allowed size." }), { status: 413, headers: corsHeaders() });
+      return new Response(JSON.stringify({ error: "A single image exceeds the allowed size." }), { status: 413, headers: corsHeaders(request) });
     }
 
     // Basic non-fabric guard by filename cue (lightweight heuristic)
@@ -71,34 +88,49 @@ export default {
     const banned = ["shoe", "boot", "sneaker", "watch", "ring", "necklace", "phone", "laptop", "tablet", "camera", "electronics"];
     if (banned.some((word) => nameStr.includes(word))) {
       return new Response(JSON.stringify({
+        score: null,
         stage: null,
         label: "Non-fabric item",
         confidence: 0,
         confidence_label: "low",
+        issues: [],
         issues_detected: [],
         repair_needed: false,
+        advice: "Only fabric items are supported (clothing, curtains, textiles).",
         notes: "Only fabric items are supported (clothing, curtains, textiles)."
-      }), { status: 400, headers: corsHeaders() });
+      }), { status: 400, headers: corsHeaders(request) });
     }
 
     try {
       const payload = await runEvaluation(photos, itemType, env);
-      return new Response(JSON.stringify(payload), { status: 200, headers: corsHeaders() });
+      return new Response(JSON.stringify(payload), { status: 200, headers: corsHeaders(request) });
     } catch (err) {
       const mock = mockResponse("Service unavailable, returning mock.");
       mock.mock = true;
-      return new Response(JSON.stringify(mock), { status: 200, headers: corsHeaders() });
+      return new Response(JSON.stringify(mock), { status: 200, headers: corsHeaders(request) });
     }
   }
 };
 
-function corsHeaders() {
-  return {
-    "content-type": "application/json",
-    "access-control-allow-origin": "*",
-    "access-control-allow-methods": "POST, OPTIONS",
-    "access-control-allow-headers": "Content-Type, Accept"
+function corsHeaders(request) {
+  const origin = request.headers.get("Origin") || "";
+
+  const allowed = new Set([
+    "https://mirandas.gr",
+    "https://www.mirandas.gr",
+  ]);
+
+  const h = {
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
   };
+
+  if (allowed.has(origin)) {
+    h["Access-Control-Allow-Origin"] = origin;
+    h["Vary"] = "Origin";
+  }
+
+  return h;
 }
 
 async function runEvaluation(files, itemType, env) {
@@ -121,7 +153,7 @@ You are a fabric condition rater. Score 1-5 using:
 3 Home use: noticeable wear/stains/fading/pilling; ok mainly for home
 4 Used but wearable: minor signs; no major defects
 5 Like new: no visible defects
-Refuse non-fabric items. Output JSON with keys: stage (1-5 or null), label, confidence (0-1), confidence_label (low|medium|high), issues_detected (array), repair_needed (bool), notes (string).
+Refuse non-fabric items. Output JSON with keys: score (1-5 or null), label, confidence (0-1), confidence_label (low|medium|high), issues (array of short issue strings), repair_needed (bool), advice (string). If you return a field named stage, also include score with the same value.
   `.trim();
 
   const userText = `Item type: ${itemType}. Rate the fabric condition from the three photos.`;
@@ -182,16 +214,30 @@ function safeParseResponse(text) {
 }
 
 function normalizePayload(data) {
-  const stage = data.stage ?? null;
+  const rawScore = data.score ?? data.stage ?? null;
+  const hasScore = rawScore !== null && rawScore !== undefined && rawScore !== "";
+  const numericScore = hasScore ? Number(rawScore) : NaN;
+  const score = Number.isFinite(numericScore) ? clamp(Math.round(numericScore), 1, 5) : null;
   const conf = Number(data.confidence ?? 0);
+  const issues = Array.isArray(data.issues)
+    ? data.issues
+    : Array.isArray(data.issues_detected)
+      ? data.issues_detected
+      : [];
+  const advice = data.advice || data.comments || data.notes || "";
+  const labelIdx = score ? score - 1 : null;
+  const fallbackLabel = Number.isInteger(labelIdx) && labelIdx >= 0 ? stageLabels()[labelIdx] : null;
   return {
-    stage: stage === null ? null : clamp(stage, 1, 5),
-    label: data.label || stageLabels()[clamp(stage, 1, 5) - 1] || "Rated",
-    confidence: isFinite(conf) ? conf : 0,
+    score,
+    stage: score,
+    label: data.label || fallbackLabel || "Rated",
+    confidence: Number.isFinite(conf) ? conf : 0,
     confidence_label: data.confidence_label || confidenceLabel(conf),
-    issues_detected: Array.isArray(data.issues_detected) ? data.issues_detected : [],
-    repair_needed: Boolean(data.repair_needed),
-    notes: data.notes || "No notes provided."
+    issues,
+    issues_detected: issues,
+    repair_needed: typeof data.repair_needed === "boolean" ? data.repair_needed : Boolean(data.repair),
+    advice,
+    notes: advice
   };
 }
 
@@ -205,20 +251,26 @@ function clamp(v, min, max) {
   return Math.min(max, Math.max(min, v));
 }
 
+//todo change 
 function stageLabels() {
   return ["Threadbare Tales", "Needs TLC", "Home Comfort", "Street Ready", "Like New"];
 }
 
 function mockResponse(notes) {
-  const stage = 4;
+  const score = 4;
+  const advice = notes || "Mock response: add your AI key for live scoring.";
   return {
-    stage,
-    label: stageLabels()[stage - 1],
+    mock: true,
+    score,
+    stage: score,
+    label: stageLabels()[score - 1],
     confidence: 0.52,
     confidence_label: "medium",
-    issues_detected: ["light fading", "minor pilling"],
+    issues: ["Mock: sample wear note"],
+    issues_detected: ["Mock: sample wear note"],
     repair_needed: false,
-    notes
+    advice,
+    notes: advice
   };
 }
 

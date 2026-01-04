@@ -11,6 +11,7 @@ Thumbs.db
 
 # Cloudflare Wrangler
 .wrangler/
+wrangler.toml
 
 # Node (if you add tooling later)
 node_modules/

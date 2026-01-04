@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Open+Sans:wght@400;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="condition.css">
+  <link rel="icon" href="/assets/stickers/bow.ico" type="image/x-icon">
 </head>
 <body>
   <header class="nav">
@@ -77,28 +78,31 @@
       <div class="container">
         <header class="section-head">
           <h2 class="h2 scribble-underline" id="results-title">Result</h2>
-          <p class="muted hand" id="results-subtitle">Quick readout with confidence and tips</p>
+          <p class="muted hand" id="results-subtitle">Score, noticed issues, and quick care advice</p>
         </header>
         <div class="card result-card" id="result-card" hidden>
           <div class="result-row">
             <div>
-              <p class="micro muted" id="label-stage">Stage</p>
-              <div class="result-stage"><span id="result-stage">—</span> <span class="badge" id="result-label">—</span></div>
+              <p class="micro muted" id="label-stage">Overall fabric health (1-5)</p>
+              <div class="result-stage"><span id="result-stage">-</span> <span class="badge" id="result-label">Rated</span></div>
             </div>
             <div>
               <p class="micro muted" id="label-confidence">Confidence</p>
-              <div id="result-confidence">—</div>
+              <div id="result-confidence">-</div>
             </div>
             <div>
               <p class="micro muted" id="label-repair">Repair needed?</p>
-              <div id="result-repair">—</div>
+              <div id="result-repair">-</div>
             </div>
           </div>
           <div class="result-issues">
-            <p class="micro muted" id="label-issues">Issues detected</p>
+            <p class="micro muted" id="label-issues">What we noticed</p>
             <ul id="result-issues-list"></ul>
           </div>
-          <p id="result-notes" class="muted"></p>
+          <div class="result-advice">
+            <p class="micro muted" id="label-advice">Quick care advice</p>
+            <p id="result-notes" class="muted"></p>
+          </div>
           <div id="result-tips" class="tip" hidden>
             <strong id="tips-title">Low confidence tips</strong>
             <ul>

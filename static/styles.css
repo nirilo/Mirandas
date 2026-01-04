@@ -35,18 +35,18 @@ body::before{
 body::after{
   content:""; position:fixed; inset:0; pointer-events:none; opacity:.95; z-index:0;
   background-image:
-    url("assets/stickers/handmade.png"),
-    url("assets/stickers/bow.png"),
-    url("assets/stickers/scissors.png"),
-    url("assets/stickers/needle.png"),
-    url("assets/stickers/thread.png"),
-    url("assets/stickers/pillow.png"),
-    url("assets/stickers/leaves.png"),
-    url("assets/stickers/measuringTape.png"),
-    url("assets/stickers/reel.png"),
-    url("assets/stickers/safetyPin.png"),
-    url("assets/stickers/glasses.png"),
-    url("assets/stickers/bobbin.png");
+    url("assets/stickers/handmade.webp"),
+    url("assets/stickers/bow.webp"),
+    url("assets/stickers/scissors.webp"),
+    url("assets/stickers/needle.webp"),
+    url("assets/stickers/thread.webp"),
+    url("assets/stickers/pillow.webp"),
+    url("assets/stickers/leaves.webp"),
+    url("assets/stickers/measuringTape.webp"),
+    url("assets/stickers/reel.webp"),
+    url("assets/stickers/safetyPin.webp"),
+    url("assets/stickers/glasses.webp"),
+    url("assets/stickers/bobbin.webp");
   background-size:
     240px,
     240px,
@@ -81,7 +81,7 @@ body::after{
    Medium+ screens retain the full sticker collage above. */
 @media (max-width: 767.98px){
   body::after{
-    background-image: url("assets/stickers/bow.png");
+    background-image: url("assets/stickers/bow.webp");
     background-size: 260px;
     background-repeat: no-repeat;
     background-position: 50% 40%;
@@ -107,6 +107,12 @@ h1,.display{font-family:"Playfair Display", Georgia, serif; letter-spacing:.2px;
   content:""; position:absolute; left:0; right:0; bottom:-6px; height:10px; opacity:.95;
   background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 20' preserveAspectRatio='none'><path d='M5 15 Q 40 5, 80 14 T 195 12' fill='none' stroke='%236b705c' stroke-width='3' stroke-linecap='round'/></svg>") center/100% 100% no-repeat;
 }
+
+.badge.badge-1{background:#d64545; color:#fff; border-radius:999px; padding:.2rem .6rem;}
+.badge.badge-2{background:#f08aab; color:#311018; border-radius:999px; padding:.2rem .6rem;}
+.badge.badge-3{background:#f4c361; color:#3b2d0c; border-radius:999px; padding:.2rem .6rem;}
+.badge.badge-4{background:#b5e28f; color:#1e2e10; border-radius:999px; padding:.2rem .6rem;}
+.badge.badge-5{background:#4fb171; color:#0f1f14; border-radius:999px; padding:.2rem .6rem;}
 
 .nav{
   position:sticky; top:0; background:rgba(247,240,230,.92);
