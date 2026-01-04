@@ -518,6 +518,7 @@ function clamp(v, min, max) {
   return Math.min(max, Math.max(min, v));
 }
 
+//todo change 
 function stageLabels() {
   return ["Φθαρμένο (σόρρυ)", "Θέλει φροντίδα κ' προδέρμ", "Καλούτσικη κατάσταση", "Έτοιμο για έξω, πένα!", "Σαν καινούριο, εύγε."];
 }

@@ -516,9 +516,47 @@ function mockResponse() {
   };
 }
 
+// async function evaluate() {
+//   nextBtn.disabled = true;
+//   nextBtn.textContent = t().evaluate;
+//   const form = new FormData();
+//   state.photos.forEach((file, idx) => {
+//     form.append(`photo${idx + 1}`, file, file.name);
+//   });
+//   form.append("itemType", state.itemType);
+
+//   try {
+//     const res = await fetch("/api/evaluate", {
+//       method: "POST",
+//       body: form,
+//     });
+//     if (!res.ok) {
+//       const ct = res.headers.get("content-type") || "";
+//       const body = ct.includes("application/json")
+//         ? await res.json()
+//         : await res.text();
+//       throw new Error(
+//         `HTTP ${res.status}: ${
+//           typeof body === "string" ? body.slice(0, 200) : JSON.stringify(body)
+//         }`
+//       );
+//     }
+//     const data = await res.json();
+//     renderResult(data.mock ? data : data);
+//   } catch (err) {
+//     console.warn("Falling back to mock", err);
+//     renderResult(mockResponse());
+//   } finally {
+//     nextBtn.disabled = false;
+//     nextBtn.textContent = t().evaluate;
+//   }
+// }
+
+
 async function evaluate() {
   nextBtn.disabled = true;
   nextBtn.textContent = t().evaluate;
+
   const form = new FormData();
   state.photos.forEach((file, idx) => {
     form.append(`photo${idx + 1}`, file, file.name);
