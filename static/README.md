@@ -1,6 +1,6 @@
 # Miranda static site
 
-This folder contains a static, responsive recreation of the Miranda atelier site plus the AI Fabric Condition Rater (no build tools).
+This folder contains a static, responsive recreation of the Miranda's atelier site plus the AI Fabric Condition Rater (no build tools).
 
 ## Files
 - `index.html` — main site (hero, about, before/after gallery, projects, contact form).

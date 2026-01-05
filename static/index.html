@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@400;600;700;800&family=Caveat:wght@600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="/assets/stickers/bow.ico" type="image/x-icon">
 </head>
 <body>
   <header class="nav">
@@ -29,7 +30,7 @@
       <div class="container hero-inner">
         <div class="hero-copy">
           <p class="hand tag" id="hero-tag">Made-to-measure care</p>
-          <h1 class="display scribble-underline">Miranda</h1>
+          <h1 class="display scribble-underline">Miranda's</h1>
           <p class="lead" id="hero-lead">Thoughtful, high-quality <strong>repairs & alterations</strong> from denim to wedding dresses and home textiles.</p>
           <div class="hero-actions">
             <a class="btn btn-stitch" id="hero-btn-primary" href="#contact">Book a fitting</a>
@@ -128,9 +129,9 @@
       <div class="container contact-grid">
         <div>
           <h2 class="h2 scribble-underline" id="contact-heading">Contact</h2>
-          <p id="contact-phone"><strong>Phone:</strong> +30 210 000 0000</p>
-          <p id="contact-email"><strong>Email:</strong> hello@miranda.example</p>
-          <p id="contact-address"><strong>Address:</strong> Placeholder St 12, Athens</p>
+          <p id="contact-phone"><strong>Phone:</strong> +30 210 0000 000</p>
+          <!-- <p id="contact-email"><strong>Email:</strong> mir@no.com</p> -->
+          <p id="contact-address"><strong>Address:</strong> Avlonos, Athens</p>
           <!-- <p class="muted micro" id="contact-note">Future: AI-assisted intake for faster quotes and fit notes.</p> -->
           <a class="btn btn-secondary" id="back-top" href="#hero">Back to top</a>
         </div>
@@ -153,6 +154,7 @@
             <span id="label-photos">Upload reference photos</span>
             <input type="file" name="photos" accept="image/*" multiple>
           </label>
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAACKs1aHL3A4iHDDR"></div>
           <button type="submit" class="btn btn-stitch" id="form-submit">Send request</button>
           <p class="micro muted" id="form-note">This form is static for now. A backend will soon add AI-powered job intake.</p>
         </form>
@@ -172,4 +174,7 @@
 
   <script src="main.js"></script>
 </body>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
 </html>

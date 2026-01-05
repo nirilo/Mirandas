@@ -4,7 +4,7 @@ export default {
 
     if (url.hostname === "mirandas.gr") {
       url.hostname = "www.mirandas.gr";
-      return Response.redirect(url.toString(), 301);
+      return Response.redirect(url.toString(), 308);
     }
 
      if (url.pathname === "/evaluate" || url.pathname === "/evaluate/"|| url.pathname === "/condition/" || url.pathname === "/condition") {
@@ -13,10 +13,121 @@ export default {
       return env.ASSETS.fetch(request);
     }
 
-    if (url.pathname !== "/api/evaluate") {
-      // return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers: corsHeaders() });
-      return env.ASSETS.fetch(request);
+    if (url.pathname === "/api/evaluate") {
+      return handleEvaluate(request, env);
     }
+
+    if (url.pathname.startsWith("/api/contact")) {
+      return handleContactRoutes(request, env, url);
+    }
+
+    return env.ASSETS.fetch(request);
+  }
+};
+
+async function handleContactRoutes(request, env, url) {
+  if (request.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: corsHeaders(request) });
+  }
+
+  if (url.pathname === "/api/contact") return handleContact(request, env);
+
+  // Admin-only endpoints for viewing messages/photos:
+  if (url.pathname === "/api/contact/list") return handleContactList(request, env, url);
+  if (url.pathname === "/api/contact/get") return handleContactGet(request, env, url);
+  if (url.pathname === "/api/contact/file") return handleContactFile(request, env, url);
+
+  return new Response(JSON.stringify({ ok: false, error: "Not found" }), {
+    status: 404,
+    headers: corsHeaders(request),
+  });
+}
+
+function requireAdmin(url, env) {
+  const token = url.searchParams.get("token") || "";
+  return Boolean(env.ADMIN_TOKEN) && token === env.ADMIN_TOKEN;
+}
+
+function safeFilename(name) {
+  return (name || "photo")
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 80);
+}
+
+async function handleContactList(request, env, url) {
+  if (!requireAdmin(url, env)) {
+    return new Response(JSON.stringify({ ok: false, error: "Unauthorized" }), { status: 401, headers: corsHeaders(request) });
+  }
+  if (!env.CONTACT_KV) {
+    return new Response(JSON.stringify({ ok: false, error: "CONTACT_KV not bound" }), { status: 500, headers: corsHeaders(request) });
+  }
+
+  const limit = Math.min(Number(url.searchParams.get("limit") || 50), 100);
+  const listed = await env.CONTACT_KV.list({ prefix: "contact:", limit });
+
+  const items = [];
+  for (const k of listed.keys) {
+    const v = await env.CONTACT_KV.get(k.name, "json");
+    if (v) items.push(v);
+  }
+
+  // newest first (by receivedAt)
+  items.sort((a, b) => (b.receivedAt || "").localeCompare(a.receivedAt || ""));
+  return new Response(JSON.stringify({ ok: true, items }), { status: 200, headers: corsHeaders(request) });
+}
+
+async function handleContactGet(request, env, url) {
+  if (!requireAdmin(url, env)) {
+    return new Response(JSON.stringify({ ok: false, error: "Unauthorized" }), { status: 401, headers: corsHeaders(request) });
+  }
+  if (!env.CONTACT_KV) {
+    return new Response(JSON.stringify({ ok: false, error: "CONTACT_KV not bound" }), { status: 500, headers: corsHeaders(request) });
+  }
+
+  const id = (url.searchParams.get("id") || "").trim();
+  if (!id) {
+    return new Response(JSON.stringify({ ok: false, error: "Missing id" }), { status: 400, headers: corsHeaders(request) });
+  }
+
+  const record = await env.CONTACT_KV.get(`contact:${id}`, "json");
+  if (!record) {
+    return new Response(JSON.stringify({ ok: false, error: "Not found" }), { status: 404, headers: corsHeaders(request) });
+  }
+
+  return new Response(JSON.stringify({ ok: true, record }), { status: 200, headers: corsHeaders(request) });
+}
+
+async function handleContactFile(request, env, url) {
+  if (!requireAdmin(url, env)) {
+    return new Response(JSON.stringify({ ok: false, error: "Unauthorized" }), { status: 401, headers: corsHeaders(request) });
+  }
+  if (!env.CONTACT_UPLOADS) {
+    return new Response(JSON.stringify({ ok: false, error: "CONTACT_UPLOADS not bound" }), { status: 500, headers: corsHeaders(request) });
+  }
+
+  const key = (url.searchParams.get("key") || "").trim();
+  if (!key) {
+    return new Response(JSON.stringify({ ok: false, error: "Missing key" }), { status: 400, headers: corsHeaders(request) });
+  }
+
+  const obj = await env.CONTACT_UPLOADS.get(key);
+  if (!obj) {
+    return new Response(JSON.stringify({ ok: false, error: "Not found" }), { status: 404, headers: corsHeaders(request) });
+  }
+
+  const headers = {
+    ...corsHeaders(request),
+    "Cache-Control": "no-store",
+    "Content-Type": obj.httpMetadata?.contentType || "application/octet-stream",
+  };
+
+  return new Response(obj.body, { status: 200, headers });
+}
+
+
+async function handleContact(request, env) {
 
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: corsHeaders(request) });
@@ -37,7 +148,7 @@ export default {
     }
 
     const contentLength = Number(request.headers.get("content-length") || 0);
-    const MAX_BYTES = 15 * 1024 * 1024; // 15MB cap
+    const MAX_BYTES = 10 * 1024 * 1024;
     if (contentLength && contentLength > MAX_BYTES) {
       return new Response(JSON.stringify({ error: "Payload too large" }), { status: 413, headers: corsHeaders(request) });
     }
@@ -49,68 +160,220 @@ export default {
       return new Response(JSON.stringify({ error: "Invalid form data" }), { status: 400, headers: corsHeaders(request) });
     }
 
-    const photos = ["photo1", "photo2", "photo3"].map((key) => form.get(key));
-    const itemType = (form.get("itemType") || "").toString().trim().toLowerCase();
+    const token = form.get("cf-turnstile-response");
+    const ip = request.headers.get("CF-Connecting-IP") || request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for") || "";
 
-    if (!itemType || !["clothing", "curtain", "other fabric"].includes(itemType)) {
-      return new Response(JSON.stringify({
-        score: null,
-        stage: null,
-        label: "Unsupported item",
-        confidence: 0,
-        confidence_label: "low",
-        issues: [],
-        issues_detected: [],
-        repair_needed: false,
-        advice: "Only fabric items are supported. Choose clothing, curtain, or other fabric.",
-        notes: "Only fabric items are supported. Choose clothing, curtain, or other fabric."
-      }), { status: 400, headers: corsHeaders(request) });
+    if (!token) {
+      return new Response(
+        JSON.stringify({ ok: false, error: "Missing Turnstile token" }),
+        {
+          status: 400,
+          headers: corsHeaders(request),
+        }
+      );
     }
 
-    if (photos.some((p) => !isImageFile(p))) {
-      return new Response(JSON.stringify({ error: "All three images are required and must be images." }), { status: 400, headers: corsHeaders(request) });
+    const verifyBody = new FormData();
+    verifyBody.append("secret", env.TURNSTILE_SECRET);
+    verifyBody.append("response", token);
+    if (ip) verifyBody.append("remoteip", ip);
+
+    const resp = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "POST",
+        body: verifyBody,
+      }
+    );
+
+    const outcome = await resp.json();
+
+    if (!outcome.success) {
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          error: "Turnstile failed",
+          codes: outcome["error-codes"],
+        }),
+        {
+          status: 403,
+          headers: corsHeaders(request),
+        }
+      );
     }
 
-    const MAX_FILE = 6 * 1024 * 1024; // 6MB per image (post compression expected)
-    const totalBytes = photos.reduce((sum, file) => sum + (file.size || 0), 0);
-    if (!totalBytes) {
-      return new Response(JSON.stringify({ error: "Images missing or empty." }), { status: 400, headers: corsHeaders(request) });
+  
+    const name = (form.get("name") || "").toString().trim();
+    const email = (form.get("email") || "").toString().trim();
+    const details = (form.get("details") || "").toString().trim();
+    const lang = (form.get("lang") || "").toString().trim();
+
+    if (!name || !email || !details) {
+      return new Response(JSON.stringify({ ok: false, error: "Missing required fields" }), { status: 400, headers: corsHeaders(request) });
     }
-    if (totalBytes > MAX_BYTES) {
-      return new Response(JSON.stringify({ error: "Images too large after compression." }), { status: 413, headers: corsHeaders(request) });
-    }
-    if (photos.some((p) => (p.size || 0) > MAX_FILE)) {
-      return new Response(JSON.stringify({ error: "A single image exceeds the allowed size." }), { status: 413, headers: corsHeaders(request) });
+    if (!looksLikeEmail(email)) {
+      return new Response(JSON.stringify({ ok: false, error: "Invalid email" }), { status: 400, headers: corsHeaders(request) });
     }
 
-    // Basic non-fabric guard by filename cue (lightweight heuristic)
-    const nameStr = photos.map((p) => (p.name || "").toLowerCase()).join(" ");
-    const banned = ["shoe", "boot", "sneaker", "watch", "ring", "necklace", "phone", "laptop", "tablet", "camera", "electronics"];
-    if (banned.some((word) => nameStr.includes(word))) {
-      return new Response(JSON.stringify({
-        score: null,
-        stage: null,
-        label: "Non-fabric item",
-        confidence: 0,
-        confidence_label: "low",
-        issues: [],
-        issues_detected: [],
-        repair_needed: false,
-        advice: "Only fabric items are supported (clothing, curtains, textiles).",
-        notes: "Only fabric items are supported (clothing, curtains, textiles)."
-      }), { status: 400, headers: corsHeaders(request) });
+    // Photos: allow multiple files under the field name "photos"
+    const photos = form.getAll("photos").filter((p) => isImageFile(p));
+    const MAX_FILES = 5;
+    const MAX_FILE = 4 * 1024 * 1024;
+    const limitedPhotos = photos.slice(0, MAX_FILES);
+    const totalBytes = limitedPhotos.reduce((sum, file) => sum + (file.size || 0), 0);
+    if (limitedPhotos.some((p) => (p.size || 0) > MAX_FILE) || totalBytes > MAX_BYTES) {
+      return new Response(JSON.stringify({ ok: false, error: "Photos too large" }), { status: 413, headers: corsHeaders(request) });
     }
 
-    try {
-      const payload = await runEvaluation(photos, itemType, env);
-      return new Response(JSON.stringify(payload), { status: 200, headers: corsHeaders(request) });
-    } catch (err) {
-      const mock = mockResponse("Service unavailable, returning mock.");
-      mock.mock = true;
-      return new Response(JSON.stringify(mock), { status: 200, headers: corsHeaders(request) });
+    const submissionId = crypto.randomUUID();
+    const receivedAt = new Date().toISOString();
+    const userAgent = request.headers.get("user-agent") || "";
+
+    const uploaded = [];
+    if (env.CONTACT_UPLOADS && limitedPhotos.length) {
+      for (let i = 0; i < limitedPhotos.length; i++) {
+        const f = limitedPhotos[i];
+        const key = `contact/${submissionId}/${String(i + 1).padStart(
+          2,
+          "0"
+        )}-${safeFilename(f.name)}`;
+
+        await env.CONTACT_UPLOADS.put(key, f.stream(), {
+          httpMetadata: { contentType: f.type || "application/octet-stream" },
+        });
+
+        uploaded.push({
+          key,
+          name: f.name || "",
+          type: f.type || "",
+          size: f.size || 0,
+        });
+      }
     }
+
+    const record = {
+      id: submissionId, 
+      receivedAt,
+      ip,
+      userAgent,
+      lang,
+      name,
+      email,
+      details,
+      photos: uploaded,
+    };
+
+  if (env.CONTACT_KV && typeof env.CONTACT_KV.put === "function") {
+    await env.CONTACT_KV.put(
+      `contact:${submissionId}`,
+      JSON.stringify(record),
+      {
+        expirationTtl: 60 * 60 * 24 * 90,
+      }
+    );
+  } else {
+    console.log("Contact submission", record);
   }
-};
+
+  return new Response(JSON.stringify({ ok: true, id: submissionId }), { status: 200, headers: corsHeaders(request) });
+}
+
+
+
+async function handleEvaluate(request, env) {
+  if (request.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: corsHeaders(request) });
+  }
+
+  if (request.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: corsHeaders(request) });
+  }
+
+  const rateStatus = rateLimit(request);
+  if (!rateStatus.ok) {
+    return new Response(JSON.stringify({ error: "Too many requests. Please slow down." }), { status: 429, headers: corsHeaders(request) });
+  }
+
+  const contentType = request.headers.get("content-type") || "";
+  if (!contentType.toLowerCase().includes("multipart/form-data")) {
+    return new Response(JSON.stringify({ error: "Content-Type must be multipart/form-data" }), { status: 400, headers: corsHeaders(request) });
+  }
+
+  const contentLength = Number(request.headers.get("content-length") || 0);
+  const MAX_BYTES = 15 * 1024 * 1024; // 15MB cap
+  if (contentLength && contentLength > MAX_BYTES) {
+    return new Response(JSON.stringify({ error: "Payload too large" }), { status: 413, headers: corsHeaders(request) });
+  }
+
+  let form;
+  try {
+    form = await request.formData();
+  } catch (err) {
+    return new Response(JSON.stringify({ error: "Invalid form data" }), { status: 400, headers: corsHeaders(request) });
+  }
+
+  const photos = ["photo1", "photo2", "photo3"].map((key) => form.get(key));
+  const itemType = (form.get("itemType") || "").toString().trim().toLowerCase();
+
+  if (!itemType || !["clothing", "curtain", "other fabric"].includes(itemType)) {
+    return new Response(JSON.stringify({
+      score: null,
+      stage: null,
+      label: "Unsupported item",
+      confidence: 0,
+      confidence_label: "low",
+      issues: [],
+      issues_detected: [],
+      repair_needed: false,
+      advice: "Only fabric items are supported. Choose clothing, curtain, or other fabric.",
+      notes: "Only fabric items are supported. Choose clothing, curtain, or other fabric."
+    }), { status: 400, headers: corsHeaders(request) });
+  }
+
+  if (photos.some((p) => !isImageFile(p))) {
+    return new Response(JSON.stringify({ error: "All three images are required and must be images." }), { status: 400, headers: corsHeaders(request) });
+  }
+
+  const MAX_FILE = 6 * 1024 * 1024; // 6MB per image (post compression expected)
+  const totalBytes = photos.reduce((sum, file) => sum + (file.size || 0), 0);
+  if (!totalBytes) {
+    return new Response(JSON.stringify({ error: "Images missing or empty." }), { status: 400, headers: corsHeaders(request) });
+  }
+  if (totalBytes > MAX_BYTES) {
+    return new Response(JSON.stringify({ error: "Images too large after compression." }), { status: 413, headers: corsHeaders(request) });
+  }
+  if (photos.some((p) => (p.size || 0) > MAX_FILE)) {
+    return new Response(JSON.stringify({ error: "A single image exceeds the allowed size." }), { status: 413, headers: corsHeaders(request) });
+  }
+
+  // Basic non-fabric guard by filename cue (lightweight heuristic)
+  const nameStr = photos.map((p) => (p.name || "").toLowerCase()).join(" ");
+  const banned = ["shoe", "boot", "sneaker", "watch", "ring", "necklace", "phone", "laptop", "tablet", "camera", "electronics"];
+  if (banned.some((word) => nameStr.includes(word))) {
+    return new Response(JSON.stringify({
+      score: null,
+      stage: null,
+      label: "Non-fabric item",
+      confidence: 0,
+      confidence_label: "low",
+      issues: [],
+      issues_detected: [],
+      repair_needed: false,
+      advice: "Only fabric items are supported (clothing, curtains, textiles).",
+      notes: "Only fabric items are supported (clothing, curtains, textiles)."
+    }), { status: 400, headers: corsHeaders(request) });
+  }
+
+  try {
+
+    const payload = await runEvaluation(photos, itemType, env);
+    return new Response(JSON.stringify(payload), { status: 200, headers: corsHeaders(request) });
+  } catch (err) {
+    const mock = mockResponse("Service unavailable, returning mock.");
+    mock.mock = true;
+    return new Response(JSON.stringify(mock), { status: 503, headers: corsHeaders(request) });
+  }
+}
 
 function corsHeaders(request) {
   const origin = request.headers.get("Origin") || "";
@@ -121,7 +384,7 @@ function corsHeaders(request) {
   ]);
 
   const h = {
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
   };
 
@@ -134,6 +397,7 @@ function corsHeaders(request) {
 }
 
 async function runEvaluation(files, itemType, env) {
+  console.log(env);
   if (!env.AI_API_KEY) {
     return mockResponse("No AI_API_KEY set. Returning mock response.");
   }
@@ -184,11 +448,14 @@ Refuse non-fabric items. Output JSON with keys: score (1-5 or null), label, conf
     },
     body: JSON.stringify(visionPayload)
   });
+  const bodyText = await res.text();
 
   if (!res.ok) {
+    console.log("OpenAI error:", res.status, bodyText);
     throw new Error(`AI HTTP ${res.status}`);
   }
-  const json = await res.json();
+  const json = JSON.parse(bodyText);
+  // const json = await res.json();
   const text = json?.choices?.[0]?.message?.content || "";
   return safeParseResponse(text);
 }
@@ -251,9 +518,8 @@ function clamp(v, min, max) {
   return Math.min(max, Math.max(min, v));
 }
 
-//todo change 
 function stageLabels() {
-  return ["Threadbare Tales", "Needs TLC", "Home Comfort", "Street Ready", "Like New"];
+  return ["Φθαρμένο (σόρρυ)", "Θέλει φροντίδα κ' προδέρμ", "Καλούτσικη κατάσταση", "Έτοιμο για έξω, πένα!", "Σαν καινούριο, εύγε."];
 }
 
 function mockResponse(notes) {
@@ -279,10 +545,15 @@ function isImageFile(p) {
   return p && typeof p === "object" && typeof p.type === "string" && p.type.startsWith("image/") && typeof p.size === "number";
 }
 
-const rateMap = new Map(); // in-memory, per-worker instance
+function looksLikeEmail(value) {
+  const s = String(value || "").trim();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+}
+
+const rateMap = new Map();
 function rateLimit(request) {
   const now = Date.now();
-  const WINDOW = 60_000; // 60s
+  const WINDOW = 60_000;
   const LIMIT = 20; // 20 requests per window per client
   const key = request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for") || "anon";
   const bucket = rateMap.get(key) || [];
