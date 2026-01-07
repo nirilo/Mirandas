@@ -1,9 +1,12 @@
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    
+
     if (url.hostname === "mirandas.gr") {
-      return Response.redirect(`https://www.mirandas.gr${url.pathname}${url.search}`, 308);
+      return Response.redirect(
+        `https://www.mirandas.gr${url.pathname}${url.search}`,
+        308
+      );
     }
 
     if (url.pathname === "/api/evaluate") {
@@ -14,12 +17,37 @@ export default {
       return handleContactRoutes(request, env, url);
     }
 
+    //testing area
+    // if (url.pathname === "/api/ai-health") {
+    //   return aiHealth(request, env);
+    // }
+
     return new Response(JSON.stringify({ ok: false, error: "Not found" }), {
       status: 404,
       headers: { "content-type": "application/json" },
     });
   },
 };
+
+//testing area
+// async function aiHealth(request, env) {
+//   const key = env?.AI_API_KEY;
+//   if (!key) return new Response("Missing AI_API_KEY", { status: 500 });
+
+//   const res = await fetch("https://api.openai.com/v1/chat/completions", {
+//     method: "POST",
+//     headers: { "content-type": "application/json", Authorization: `Bearer ${key}` },
+//     body: JSON.stringify({
+//       model: "gpt-4o-mini",
+//       messages: [{ role: "user", content: "Say OK" }],
+//       max_tokens: 5,
+//     }),
+//   });
+
+//   const text = await res.text();
+//   return new Response(text, { status: res.status, headers: { "content-type": "application/json" } });
+// }
+
 
 async function handleEvaluate(request, env) {
   if (request.method === "OPTIONS") {
@@ -139,10 +167,10 @@ async function runEvaluation(files, itemType, env) {
     3 Home use: noticeable wear/stains/fading/pilling; ok mainly for home
     4 Used but wearable: minor signs; no major defects
     5 Like new: no visible defects
-    Refuse non-fabric items. Output JSON with keys: score (1-5 or null), label, confidence (0-1), confidence_label (low|medium|high), issues (array of short issue strings), repair_needed (bool), advice (string). If you return a field named stage, also include score with the same value.
+    Refuse non-fabric items. Output JSON with keys: score (1-5 or null), label, confidence (0-1), confidence_label (low|medium|high), issues (array of short issue strings), repair_needed (bool), advice (string). If you return a field named stage, also include score with the same value. All text values (label, issues, advice/notes/comments) must be written in Greek; keep the JSON keys in English.
   `.trim();
 
-  const userText = `Item type: ${itemType}. Rate the fabric condition from the three photos.`;
+  const userText = `Item type: ${itemType}. Rate the fabric condition from the three photos. Reply in Greek.`;
   const visionPayload = {
     model: "gpt-4o-mini",
     temperature: 0.2,

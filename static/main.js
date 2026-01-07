@@ -148,6 +148,8 @@ const translations = {
   }
 };
 
+const LANG_STORAGE_KEY = "miranda-lang";
+
 let currentLang = "el";
 let thumbButtons = [];
 let beforeImg, afterImg, titleEl, noteEl, beforeLabelEl, afterLabelEl;
@@ -364,6 +366,39 @@ function applyTranslations(lang) {
   }
 }
 
+function localeLooksGreek(locale = "") {
+  const value = String(locale || "").toLowerCase();
+  return value.startsWith("el") || value.endsWith("-gr") || value.endsWith("_gr");
+}
+
+function detectPreferredLanguage() {
+  try {
+    const cached = localStorage.getItem(LANG_STORAGE_KEY);
+    if (cached === "en" || cached === "el") return cached;
+
+    const locales = [];
+    if (Array.isArray(navigator.languages) && navigator.languages.length) {
+      locales.push(...navigator.languages);
+    }
+    if (navigator.language) locales.push(navigator.language);
+    const resolved = Intl?.DateTimeFormat?.().resolvedOptions?.().locale;
+    if (resolved) locales.push(resolved);
+
+    const lang = locales.some(localeLooksGreek) ? "el" : "en";
+    localStorage.setItem(LANG_STORAGE_KEY, lang);
+    return lang;
+  } catch (_) {
+    return "el";
+  }
+}
+
+function setLanguage(lang) {
+  applyTranslations(lang);
+  try {
+    localStorage.setItem(LANG_STORAGE_KEY, currentLang);
+  } catch (_) {}
+}
+
 function setYear() {
   const yearSpan = document.getElementById("year");
   if (yearSpan) yearSpan.textContent = new Date().getFullYear();
@@ -373,7 +408,7 @@ function initLangToggle() {
   const toggleBtn = document.getElementById("lang-toggle");
   if (!toggleBtn) return;
   toggleBtn.addEventListener("click", () => {
-    applyTranslations(currentLang === "en" ? "el" : "en");
+    setLanguage(currentLang === "en" ? "el" : "en");
   });
 }
 
@@ -381,6 +416,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initGallery();
   initContactForm();
   setYear();
-  applyTranslations("en");
+  const initialLang = detectPreferredLanguage();
+  setLanguage(initialLang || "el");
   initLangToggle();
 });

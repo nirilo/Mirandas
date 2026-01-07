@@ -210,6 +210,8 @@ const translations = {
   },
 };
 
+const LANG_STORAGE_KEY = "miranda-lang";
+
 translations.el.labels.advice =
   translations.el.labels.advice || translations.en.labels.advice;
 translations.el.adviceEmpty =
@@ -237,6 +239,47 @@ const langToggle = document.getElementById("lang-toggle");
 
 function t() {
   return translations[state.lang] || translations.en;
+}
+
+function localeLooksGreek(locale = "") {
+  const value = String(locale || "").toLowerCase();
+  return value.startsWith("el") || value.endsWith("-gr") || value.endsWith("_gr");
+}
+
+function detectPreferredLanguage() {
+  try {
+    const cached = localStorage.getItem(LANG_STORAGE_KEY);
+    if (cached === "en" || cached === "el") return cached;
+
+    const locales = [];
+    if (Array.isArray(navigator.languages) && navigator.languages.length) {
+      locales.push(...navigator.languages);
+    }
+    if (navigator.language) locales.push(navigator.language);
+    const resolved = Intl?.DateTimeFormat?.().resolvedOptions?.().locale;
+    if (resolved) locales.push(resolved);
+
+    const lang = locales.some(localeLooksGreek) ? "el" : "en";
+    localStorage.setItem(LANG_STORAGE_KEY, lang);
+    return lang;
+  } catch (_) {
+    return "el";
+  }
+}
+
+function setLanguage(lang) {
+  state.lang = lang === "en" ? "en" : "el";
+  try {
+    localStorage.setItem(LANG_STORAGE_KEY, state.lang);
+  } catch (_) {}
+  document.documentElement.lang = state.lang;
+  state.current = Math.min(state.current, t().steps.length);
+  renderSteps();
+  attachStepEvents();
+  restorePreviews();
+  applyStaticText();
+  updateButtons();
+  showStep(state.current);
 }
 
 function createStepMarkup(step, idx) {
@@ -622,13 +665,8 @@ function applyStaticText() {
 function setUpNavigation() {
   if (langToggle) {
     langToggle.addEventListener("click", () => {
-      state.lang = state.lang === "en" ? "el" : "en";
-      renderSteps();
-      attachStepEvents();
-      restorePreviews();
-      applyStaticText();
-      updateButtons();
-      showStep(state.current);
+      const nextLang = state.lang === "en" ? "el" : "en";
+      setLanguage(nextLang);
     });
   }
 
@@ -649,11 +687,8 @@ function setUpNavigation() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  renderSteps();
-  attachStepEvents();
-  restorePreviews();
-  applyStaticText();
+  state.lang = detectPreferredLanguage();
+  setLanguage(state.lang);
   setUpNavigation();
-  showStep(state.current);
   setYear();
 });
