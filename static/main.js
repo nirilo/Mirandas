@@ -384,7 +384,7 @@ function detectPreferredLanguage() {
     const resolved = Intl?.DateTimeFormat?.().resolvedOptions?.().locale;
     if (resolved) locales.push(resolved);
 
-    const lang = locales.some(localeLooksGreek) ? "el" : "en";
+    const lang = "el";
     localStorage.setItem(LANG_STORAGE_KEY, lang);
     return lang;
   } catch (_) {
@@ -393,9 +393,9 @@ function detectPreferredLanguage() {
 }
 
 function setLanguage(lang) {
-  applyTranslations(lang);
+  state.lang = lang === "en" ? "en" : "el";
   try {
-    localStorage.setItem(LANG_STORAGE_KEY, currentLang);
+    localStorage.setItem(LANG_STORAGE_KEY, state.lang);
   } catch (_) {}
 }
 
