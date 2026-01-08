@@ -70,7 +70,7 @@ const translations = {
     ],
     contactHeading: "Contact",
     contactPhone: "<strong>Phone:</strong> +30 210 0000 000",
-    contactEmail: "<strong>Email:</strong> mir@no.com",
+    contactEmail: "<strong>Email:</strong> contact@miranda.gr",
     contactAddress: "<strong>Address:</strong> Avlonos, Athens",
     backTop: "Back to top",
     formTitle: "Book a fitting",
@@ -127,7 +127,7 @@ const translations = {
     ],
     contactHeading: "Επικοινωνία",
     contactPhone: "<strong>Τηλ.:</strong> +30 210 0000 000",
-    contactEmail: "<strong>Email:</strong> mir@no.com",
+    contactEmail: "<strong>Email:</strong> contact@miranda.gr",
     contactAddress: "<strong>Διεύθυνση:</strong> Αυλώνος, Αθήνα",
     backTop: "Επιστροφή στην αρχή",
     formTitle: "Κλείστε ραντεβού",
@@ -384,7 +384,7 @@ function detectPreferredLanguage() {
     const resolved = Intl?.DateTimeFormat?.().resolvedOptions?.().locale;
     if (resolved) locales.push(resolved);
 
-    const lang = "el";
+    const lang = locales.some(localeLooksGreek) ? "el" : "en";
     localStorage.setItem(LANG_STORAGE_KEY, lang);
     return lang;
   } catch (_) {
