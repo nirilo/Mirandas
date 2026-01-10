@@ -1,4 +1,4 @@
-# Miranda — Static site + AI Fabric Condition Rater
+# Miranda ⁓ Static site + AI Fabric Condition Rater
 
 A lightweight, no-build static website (EN/EL) plus an **AI Fabric Condition Rater** wizard.
 

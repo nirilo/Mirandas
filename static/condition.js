@@ -1,4 +1,4 @@
-const translations = {
+const specTranslations = {
   en: {
     brandSubtitle: "atelier",
     nav: {
@@ -7,40 +7,40 @@ const translations = {
       work: "Work",
       contact: "Contact",
       condition: "Condition Rater",
-      toggle: "GR",
+      toggle: "GR"
     },
     heroTag: "AI Fabric Condition Rater",
     heroTitle: "Check fabric health in 3 snaps",
     heroLead:
-      "Upload a full item photo, a texture close-up, and any problem areas. We’ll score 1–5, note issues, and share quick advice.",
+      "Upload a full item photo, a texture close-up, and any problem areas. We'll score 1-5, note issues, and share quick advice.",
     heroBtnPrimary: "Start rating",
     heroBtnSecondary: "Need human help?",
     heroNoteTitle: "What you need",
     heroList: [
       "Good lighting, no flash",
       "Hold steady; fill the frame",
-      "Focus on cuffs, collars, hems for issues",
+      "Focus on cuffs, collars, hems for issues"
     ],
     heroNoteFoot:
       "Your photos stay in-memory for scoring and are discarded right after.",
     wizardTitle: "3-step capture",
-    wizardSubtitle: "Full item → texture → problem spots",
+    wizardSubtitle: "Full item + texture + problem spots",
     steps: [
       {
-        title: "Step 1 — Full item",
+        title: "Step 1 - Full item",
         body: "Capture the whole garment or curtain, laid flat or hanging.",
-        hint: "Keep the item centered, even lighting, no flash.",
+        hint: "Keep the item centered, even lighting, no flash."
       },
       {
-        title: "Step 2 — Texture close-up",
+        title: "Step 2 - Texture close-up",
         body: "Show fabric texture for pilling, thinning, or fuzz.",
-        hint: "Hold steady; let the weave fill the frame.",
+        hint: "Hold steady; let the weave fill the frame."
       },
       {
-        title: "Step 3 — Problem areas",
+        title: "Step 3 - Problem areas",
         body: "Focus on cuffs, collars, hems, stains, or tears.",
-        hint: "Add any visible issues; we’ll flag what matters.",
-      },
+        hint: "Add any visible issues; we'll flag what matters."
+      }
     ],
     uploadLabel: "Upload photo",
     retakeLabel: "Retake",
@@ -51,7 +51,7 @@ const translations = {
     options: {
       clothing: "Clothing",
       curtain: "Curtain",
-      other: "Other fabric",
+      other: "Other fabric"
     },
     finalReady: "Ready to evaluate all three photos.",
     back: "Back",
@@ -64,7 +64,7 @@ const translations = {
       confidence: "Confidence",
       repair: "Repair needed?",
       issues: "What we noticed",
-      advice: "Quick care advice",
+      advice: "Quick care advice"
     },
     issuesEmpty: "No specific issues noted.",
     adviceEmpty: "No care advice provided.",
@@ -72,40 +72,40 @@ const translations = {
     tips: [
       "Retake in brighter, even lighting",
       "Keep the item centered and fill most of the frame",
-      "Tap to focus on the fabric before shooting",
+      "Tap to focus on the fabric before shooting"
     ],
     faqTitle: "FAQ",
     faq: {
       q1: "Are photos stored?",
-      a1: "No. They’re compressed in your browser, sent for scoring, then discarded.",
+      a1: "No. They're compressed in your browser, sent for scoring, then discarded.",
       q2: "Supported items?",
       a2: "Clothing, curtains, and other fabrics. Shoes/electronics/jewelry are refused.",
       q3: "No AI key?",
-      a3: "You’ll see a mock response so you can test the flow.",
+      a3: "You'll see a mock response so you can test the flow."
     },
     footer: {
-      note: '© <span id="year"></span> Miranda — Creative repairs & alterations',
+      note: "&copy; <span id=\"year\"></span> Miranda - Creative repairs & alterations",
       about: "About",
-      contact: "Contact",
+      contact: "Contact"
     },
     status: {
       yes: "Yes",
       no: "No",
       high: "high",
       medium: "medium",
-      low: "low",
+      low: "low"
     },
     stageLabels: [
-      "Threadbare Tales",
-      "Needs TLC",
-      "Home Comfort",
-      "Street Ready",
-      "Like New",
+      "Worn out (sorry)",
+      "Needs care",
+      "Ok. Decent shape",
+      "Ready to wear",
+      "Like new sweetheart!"
     ],
-    mockNotes:
-      "Mock response - add your AI key to the worker for live scoring.",
-    errors: { image: "Could not process the image. Try again." },
+    mockNotes: "Mock response - add your AI key to the worker for live scoring.",
+    errors: { image: "Could not process the image. Try again." }
   },
+
   el: {
     brandSubtitle: "ατελιέ",
     nav: {
@@ -113,102 +113,106 @@ const translations = {
       about: "Σχετικά",
       work: "Δουλειές",
       contact: "Επικοινωνία",
-      condition: "Εκτίμηση Υφάσματος",
-      toggle: "EN",
+      condition: "Αξιολόγηση υφάσματος",
+      toggle: "EN"
     },
-    heroTag: "AI Εκτίμηση Κατάστασης Υφάσματος",
+    heroTag: "ΑΙ Εκτίμηση κατάστασης υφάσματος",
     heroTitle: "Έλεγχος υφάσματος σε 3 λήψεις",
     heroLead:
-      "Ανεβάστε μια πλήρη φωτογραφία, ένα κοντινό υφής και τις προβληματικές περιοχές. Θα βαθμολογήσουμε 1–5 και θα δώσουμε συμβουλές για το ρούχο.",
-    heroBtnPrimary: "Ξεκινήστε",
-    heroBtnSecondary: "Θέλω άνθρωπο",
+      "Μεταφορτώστε μια φωτογραφία ολόκληρου του αντικειμένου, ένα κοντινό στην υφή και τυχόν προβληματικά σημεία. Θα βαθμολογήσουμε 1-5, θα σημειώσουμε θέματα και θα μοιραστούμε σύντομες συμβουλές.",
+    heroBtnPrimary: "Ξεκινήστε την αξιολόγηση",
+    heroBtnSecondary: "Χρειάζεστε βοήθεια;",
     heroNoteTitle: "Τι θα χρειαστείτε",
     heroList: [
-      "Καλός φωτισμός, χωρίς φλας",
+      "Καλή φωτεινότητα, χωρίς φλας",
       "Κρατήστε σταθερά, γεμίστε το κάδρο",
-      "Εστιάστε σε μανσέτες, γιακάδες, στριφώματα",
+      "Εστιάστε σε μανσέτες, γιακάδες, στριφώματα"
     ],
     heroNoteFoot:
-      "Οι φωτογραφίες μένουν στη μνήμη για αξιολόγηση και διαγράφονται αμέσως μετά.",
+      "Οι φωτογραφίες μένουν στη μνήμη μόνο για τη βαθμολόγηση και μετά διαγράφονται.",
     wizardTitle: "Λήψη σε 3 βήματα",
-    wizardSubtitle: "Πλήρες ένδυμα → υφή → προβληματικά σημεία",
+    wizardSubtitle: "Ολόκληρο ρούχο + υφή + προβληματικά σημεία",
     steps: [
       {
-        title: "Βήμα 1 — Πλήρες ένδυμα",
-        body: "Φωτογραφίστε ολόκληρο το ρούχο ή την κουρτίνα, απλωμένα ή κρεμασμένα.",
-        hint: "Κέντρο στο κάδρο, ομοιόμορφος φωτισμός, χωρίς φλας.",
+        title: "Βήμα 1 - Ολόκληρο ρούχο",
+        body: "Φωτογραφίστε το ρούχο ή την κουρτίνα ολόκληρη, απλωμένο ή κρεμασμένο.",
+        hint: "Κρατήστε το κέντρο του κάδρου, ομοιόμορφος φωτισμός, χωρίς φλας."
       },
       {
-        title: "Βήμα 2 — Κοντινό υφής",
-        body: "Δείξτε την υφή για χνούδι, αραίωση ή pilling.",
-        hint: "Κρατήστε σταθερά και γεμίστε το πλάνο με την ύφανση.",
+        title: "Βήμα 2 - Κοντινό στην υφή",
+        body: "Δείξτε την υφή για τυχόν pilling ή λέπτυνση.",
+        hint: "Κρατήστε σταθερά, αφήστε την ύφανση να γεμίσει το κάδρο."
       },
       {
-        title: "Βήμα 3 — Προβληματικά σημεία",
+        title: "Βήμα 3 - Προβληματικά σημεία",
         body: "Εστιάστε σε μανσέτες, γιακάδες, στριφώματα, λεκέδες ή σκισίματα.",
-        hint: "Προσθέστε ό,τι φαίνεται... Θα το επισημάνουμε.",
-      },
+        hint: "Φωτογραφίστε ό,τι φαίνεται, χωρίς φλας."
+      }
     ],
-    uploadLabel: "Ανέβασμα φωτογραφίας",
+    uploadLabel: "Μεταφόρτωση φωτογραφίας",
     retakeLabel: "Ξανά",
-    noPhoto: "Καμία φωτογραφία ακόμη",
-    itemSelectTitle: "Επιλέξτε είδος",
+    noPhoto: "Δεν υπάρχει φωτογραφία ακόμη",
+    itemSelectTitle: "Επιλογή τύπου αντικειμένου",
     itemSelectBody:
-      "Διαλέξτε το πιο κοντινό ώστε το AI να εφαρμόσει το σωστό κριτήριο.",
-    itemLabel: "Είδος",
-    options: { clothing: "Ρούχο", curtain: "Κουρτίνα", other: "Ύφασμα/άλλο" },
-    finalReady: "Έτοιμο για αξιολόγηση και των τριών φωτογραφιών.",
+      "Διαλέξτε την πιο κοντινή επιλογή ώστε η AI να χρησιμοποιήσει το σωστό κριτήριο.",
+    itemLabel: "Αντικείμενο",
+    options: { clothing: "Ρούχο", curtain: "Κουρτίνα", other: "Άλλο ύφασμα" },
+    finalReady: "Έτοιμοι για αξιολόγηση και των τριών φωτογραφιών.",
     back: "Πίσω",
     next: "Επόμενο",
     evaluate: "Αξιολόγηση",
     resultTitle: "Αποτέλεσμα",
-    resultSubtitle: "Σύντομη ανάγνωση με βεβαιότητα και συμβουλές",
+    resultSubtitle: "Βαθμός, παρατηρήσεις και συμβουλές φροντίδας",
     labels: {
-      stage: "Βαθμός",
+      stage: "Γενική κατάσταση υφάσματος (1-5)",
       confidence: "Βεβαιότητα",
-      repair: "Χρειάζεται επιδιορθώση;",
-      issues: "Θέματα που εντοπίστηκαν",
+      repair: "Χρειάζεται επισκευή;",
+      issues: "Τι εντοπίσαμε",
+      advice: "Συμβουλές φροντίδας"
     },
-    issuesEmpty: "Δεν εντοπίστηκαν εμφανή θέματα.",
-    tipsTitle: "Συμβουλές για αβεβαιότητα εκτίμησης",
+    issuesEmpty: "Δεν εντοπίστηκαν συγκεκριμένα θέματα.",
+    adviceEmpty: "Δεν δόθηκαν επιπλέον συμβουλές.",
+    tipsTitle: "Οδηγίες για χαμηλή βεβαιότητα",
     tips: [
-      "Ξαναδοκιμάστε σε πιο έντονο, ομοιόμορφο φως",
-      "Κεντράρετε και γεμίστε το πλάνο με το αντικείμενο",
-      "Πατήστε για εστίαση στο ύφασμα πριν τη λήψη",
+      "Φωτογραφίστε σε δυνατό, ομοιόμορφο φως",
+      "Κρατήστε το αντικείμενο στο κέντρο και γεμίστε το κάδρο",
+      "Πατήστε για εστίαση στο ύφασμα πριν τη λήψη"
     ],
     faqTitle: "Συχνές ερωτήσεις",
     faq: {
       q1: "Αποθηκεύονται οι φωτογραφίες;",
-      a1: "Όχι. Συμπιέζονται στον browser, αποστέλλονται για αξιολόγηση και διαγράφονται.",
-      q2: "Τι υποστηρίζεται;",
+      a1: "Όχι. Συμπιέζονται στο browser σας, στέλνονται για βαθμολόγηση και μετά διαγράφονται.",
+      q2: "Τι είδη υποστηρίζονται;",
       a2: "Ρούχα, κουρτίνες και άλλα υφάσματα. Παπούτσια/ηλεκτρονικά/κοσμήματα απορρίπτονται.",
-      q3: "Χωρίς AI key;",
-      a3: "Θα δείτε δοκιμαστική απάντηση για να ελέγξετε τη ροή.",
+      q3: "Χωρίς κλειδί AI;",
+      a3: "Θα δείτε δοκιμαστική απάντηση για να ελέγξετε τη ροή."
     },
     footer: {
-      note: '© <span id="year"></span> Miranda — Δημιουργικές επιδιορθώσεις & μεταποιήσεις',
+      note: "&copy; <span id=\"year\"></span> Miranda - Δημιουργικές επιδιορθώσεις & μεταποιήσεις",
       about: "Σχετικά",
-      contact: "Επικοινωνία",
+      contact: "Επικοινωνία"
     },
     status: {
       yes: "Ναι",
       no: "Όχι",
       high: "υψηλή",
       medium: "μεσαία",
-      low: "χαμηλή",
+      low: "χαμηλή"
     },
     stageLabels: [
-      "Πολύ φθαρμένο",
-      "Χρειάζεται φροντίδα",
-      "Ρούχο για σπίτι",
-      "Φοριέται άνετα",
-      "Σαν καινούριο",
+      "Φθαρμένο (σόρρυ)",
+      "Θέλει φροντίδα κ' προδέρμ",
+      "Καλούτσικη κατάσταση",
+      "Έτοιμο για έξω, πένα!",
+      "Σαν καινούριο, εύγε."
     ],
     mockNotes:
-      "Δοκιμαστική απάντηση : προσθέστε AI key στο worker για ζωντανή αξιολόγηση.",
-    errors: { image: "Αποτυχία επεξεργασίας εικόνας. Δοκιμάστε ξανά." },
-  },
+      "Δοκιμαστική απάντηση - προσθέστε AI key στο worker για ζωντανή βαθμολόγηση.",
+    errors: { image: "Δεν ήταν δυνατή η επεξεργασία της εικόνας. Δοκιμάστε ξανά." }
+  }
 };
+
+const translations = specTranslations;
 
 const LANG_STORAGE_KEY = "miranda-lang";
 
@@ -241,30 +245,12 @@ function t() {
   return translations[state.lang] || translations.en;
 }
 
-function localeLooksGreek(locale = "") {
-  const value = String(locale || "").toLowerCase();
-  return value.startsWith("el") || value.endsWith("-gr") || value.endsWith("_gr");
-}
-
 function detectPreferredLanguage() {
   try {
     const cached = localStorage.getItem(LANG_STORAGE_KEY);
     if (cached === "en" || cached === "el") return cached;
-
-    const locales = [];
-    if (Array.isArray(navigator.languages) && navigator.languages.length) {
-      locales.push(...navigator.languages);
-    }
-    if (navigator.language) locales.push(navigator.language);
-    const resolved = Intl?.DateTimeFormat?.().resolvedOptions?.().locale;
-    if (resolved) locales.push(resolved);
-
-    const lang = locales.some(localeLooksGreek) ? "el" : "en";
-    localStorage.setItem(LANG_STORAGE_KEY, lang);
-    return lang;
-  } catch (_) {
-    return "el";
-  }
+  } catch (_) {}
+  return "el";
 }
 
 function setLanguage(lang) {

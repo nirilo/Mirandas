@@ -5,9 +5,9 @@ const galleryItems = [
     title: { en: "Denim repair", el: "Επιδιόρθωση τζιν" },
     note: {
       en: "Invisible patch & color-match stitching.",
-      el: "Αόρατο μπάλωμα και ραφή με ταιριαστά νήματα."
+      el: "Μπάλωμα με ραφές που δεν ενοχλούν το δέρμα."
     },
-    aria: { en: "Show denim repair", el: "Δείτε επιδιόρθωση τζιν" }
+    aria: { en: "Show denim repair", el: "Προβολή επιδιόρθωσης τζιν" }
   },
   {
     before: "assets/images/dress_before.webp",
@@ -15,42 +15,50 @@ const galleryItems = [
     title: { en: "Evening dress hem", el: "Στρίφωμα βραδινού φορέματος" },
     note: {
       en: "Hand-finished hem; original drape preserved.",
-      el: "Χειροποίητο στρίφωμα, με διατήρηση της αρχικής φόρμας."
+      el: "Καλά εδώ υπερβάλλαμε λιγάκι, αλλά εντάξει. Κάτι τέτοιο."
     },
-    aria: { en: "Show evening dress hem", el: "Δείτε στρίφωμα φορέματος" }
+    aria: { en: "Show evening dress hem", el: "Προβολή στριφώματος φορέματος" }
   },
   {
     before: "assets/images/curtain_before.webp",
     after: "assets/images/curtain_after.webp",
-    title: { en: "Curtain resizing", el: "Κόντεμα κουρτίνας" },
+    title: { en: "Curtain resizing", el: "Κόντεμα κουρτινών" },
     note: {
       en: "Custom length + new header tape.",
-      el: "Προσαρμογή μήκους και νέα τρέσα στη κορυφή."
+      el: "Προσαρμοσμένο μήκος και τοποθέτηση νέας τρέσας."
     },
-    aria: { en: "Show curtain resizing", el: "Δείτε κόντεμα κουρτίνας" }
+    aria: { en: "Show curtain resizing", el: "Προβολή κοψίματος κουρτινών" }
   }
 ];
 
-const translations = {
+const specTranslations = {
   en: {
     brandSubtitle: "atelier",
-    nav: { home: "Home", about: "About", work: "Work", contact: "Contact", condition: "Condition Rater", toggle: "GR" },
+    nav: {
+      home: "Home",
+      about: "About",
+      work: "Work",
+      contact: "Contact",
+      condition: "Condition Rater",
+      toggle: "GR"
+    },
     heroTag: "Made-to-measure care",
-    heroLead: 'Careful, high-quality <strong>repairs & alterations</strong> from denim to bridal wear and home textiles.',
+    heroLead:
+      'Careful, high-quality <strong>repairs & alterations</strong> from denim to bridal wear and home textiles.',
     heroBtnPrimary: "Book a fitting",
     heroBtnSecondary: "See work",
     hoursLabel: "Hours",
-    hoursValue: "Mon–Fri, 09:00–15:00, 17:00–21:00",
+    hoursValue: "Mon-Fri, 09:00-15:00, 17:00-21:00",
     locationLabel: "Location",
     locationValue: "Athens, Sepolia, GR",
-    heroQuote: "“We keep the original look—minimal on the outside, maximum care inside.”",
+    heroQuote: '"We keep the original look - minimal on the outside, maximum care inside."',
     heroList: [
       "Invisible mending for denim",
       "Hand-finished hems & bridal adjustments",
       "Home textiles resized with care"
     ],
     aboutTitle: "About the atelier",
-    aboutLead: "I’m Miranda, a tailor who keeps your favorites in rotation with light, respectful alterations.",
+    aboutLead: "I'm Miranda, a tailor who keeps your favorites in rotation with light, respectful alterations.",
     pills: ["Tailored fits", "Mindful mending", "Home textiles"],
     specialtiesTitle: "Specialties",
     specialtiesList: [
@@ -58,95 +66,114 @@ const translations = {
       "Denim darning, color-matched threads",
       "Curtain and upholstery tailoring"
     ],
-    aboutNote: "Coming soon: AI-assisted fit notes for quicker quotes.",
     workHeading: "Before & After",
     workSubtitle: "Small miracles, stitched by hand.",
     beforeLabel: "Before",
     afterLabel: "After",
     cards: [
-      { title: "Custom fits", body: "Waist, bust, and hem adjustments that honor the garment’s lines." },
+      { title: "Custom fits", body: "Waist, bust, and hem adjustments that honor the garment's lines." },
       { title: "Repair & revive", body: "Mending, darning, and reinforcing high-wear areas with color-matched thread." },
       { title: "Home textiles", body: "Curtains resized, cushions refreshed, linens finished with neat seams." }
     ],
     contactHeading: "Contact",
-    contactPhone: "<strong>Phone:</strong> +30 210 0000 000",
-    contactEmail: "<strong>Email:</strong> contact@miranda.gr",
+    contactPhone: "<strong>Phone:</strong> +30 210 5158929",
+    contactEmail: "<strong>Email:</strong> contact@mirandas.gr",
     contactAddress: "<strong>Address:</strong> Avlonos, Athens",
     backTop: "Back to top",
-    formTitle: "Book a fitting",
+    formTitle: "Book a fitting 🎔",
     labelName: "Name",
     labelEmail: "Email",
     labelDetails: "What do you need?",
-    detailsPlaceholder: "Hem, repair, bridal fitting…",
+    detailsPlaceholder: "Hem, repair, bridal fitting...",
     labelPhotos: "Upload reference photos",
     formSubmit: "Send request",
-    formNote: "Send your request and we’ll get back to you soon.",
-    formSending: "Sending…",
-    formConfirm: "Request sent. We’ll reply soon.",
+    formNote: "Send your request and we'll get back to you soon.",
+    formSending: "Sending...",
+    formConfirm: "Request sent. We'll reply soon.",
     formError: "Could not send. Please try again.",
     fileSelectedPrefix: "Selected",
-    footerNote: "© <span id=\"year\"></span> Miranda — Creative repairs & alterations",
+    footerNote: "&copy; <span id=\"year\"></span> Miranda 2026 - Creative repairs & alterations",
     footerAbout: "About",
     footerContact: "Contact"
   },
   el: {
     brandSubtitle: "ατελιέ",
-    nav: { home: "Αρχική", about: "Σχετικά", work: "Δουλειές", contact: "Επικοινωνία", condition: "Εκτίμηση Υφάσματος", toggle: "EN" },
-    heroTag: "Φροντίδα στα μέτρα σας",
-    heroLead: 'Ποιοτικές <strong>επιδιορθώσεις & μεταποιήσεις</strong> από denim έως νυφικά και υφάσματα σπιτιού.',
+    nav: {
+      home: "Αρχική",
+      about: "Σχετικά",
+      work: "Δουλειές",
+      contact: "Επικοινωνία",
+      condition: "Αξιολόγηση υφάσματος",
+      toggle: "EN"
+    },
+    heroTag: "Μοδίστρα",
+    heroLead:
+      'Προσεκτικές, υψηλής ποιότητας <strong>επιδιορθώσεις και μεταποιήσεις</strong> από denim μέχρι νυφικά και υφάσματα σπιτιού.',
     heroBtnPrimary: "Κλείστε ραντεβού",
     heroBtnSecondary: "Δείτε δουλειές",
-    hoursLabel: "Ώρες",
-    hoursValue: "Δευ–Παρ, 09:00–15:00, 17:00–21:00",
-    locationLabel: "Τοποθεσία",
+    hoursLabel: "Ωράριο",
+    hoursValue: "Δευ-Παρ, 09:00-15:00, 17:00-21:00",
+    locationLabel: "Περιοχή",
     locationValue: "Αθήνα, Σεπόλια",
-    heroQuote: "«Κρατάμε την αρχική αισθητική με ελάχιστες αλλαγές και τη μέγιστη φροντίδα.»",
+    heroQuote: "Κρατάμε το αρχικό ύφος με τις απαραίτητες παρεμβάσεις, και τη μέγιστη φροντίδα και προσοχή.",
     heroList: [
-      "Αόρατα μπαλώματα σε denim",
-      "Χειροποίητα στριφώματα & bridal ρυθμίσεις",
-      "Προσαρμογές σε κουρτίνες και υφάσματα σπιτιού"
+      "Αόρατες επιδιορθώσεις σε denim",
+      "Στριφώματα στο χέρι και προσαρμογές σε βραδινά φορέματα.",
+      "Μεταποίηση κουρτινών με επίσκεψη κατ'οίκον για μέτρηση."
     ],
-    aboutTitle: "Σχετικά με το ατελιέ",
-    aboutLead: "Είμαι η Miranda, μοδίστρα που κρατά τα αγαπημένα σας ρούχα σε χρήση με διακριτικές ραφές.",
-    pills: ["Εφαρμογές", "Προσεκτικές επιδιορθώσεις", "Υφάσματα σπιτιού"],
-    specialtiesTitle: "Εξειδικεύσεις",
+    aboutTitle: "Σχετικά με το εργαστήρι",
+    aboutLead:
+      "Είμαι η Miranda, η μοδίστρα που χρειάζεστε για να κρατήσετε τα αγαπημένα σας ρούχα σε χρήση ακριβώς όπως τα έχετε φανταστεί! (ή και καλύτερα! 😉)",
+    pills: ["Δημιουργικότητα", "Φαντασία", "Αισθητική"],
+    specialtiesTitle: "Μερικές Ιδέες...",
     specialtiesList: [
-      "Νυφικές και βραδινές προσαρμογές",
-      "Μπάλωμα σε denim με ύφασμα ταιριαστού χρώματος",
-      "Ραφές σε κουρτίνες και καλύμματα επίπλων"
+      "Στένεμα μέσης ή φάρδεμα σε τουαλέτες, τοποθέτηση caps, επιδιόρθωση ντεκολτέ",
+      "Ανανέωση των τζιν με ραφές στο ίδιο χρώμα, προεκτάσεις, μπάλωμα καβάλου, στρίφωμα με ορίτζιναλ, κρόσια / διασκοσμητικά σκισίματα",
+      "Τοποθέτηση μανικιών, Ανέβασμα ώμων, Στένεμα, Κόντεμα, Προσθήκη / Αλλαγή φόδρας"
     ],
-    aboutNote: "Έρχεται: AI σημειώσεις εφαρμογής για πιο γρήγορες εκτιμήσεις.",
     workHeading: "Πριν & Μετά",
-    workSubtitle: "Μικρά θαύματα, ραμμένα στο χέρι.",
+    workSubtitle: "Μικρά θαύματα, ραμμένα με αγάπη και φροντίδα ⠂˖❥࿐",
     beforeLabel: "Πριν",
     afterLabel: "Μετά",
     cards: [
-      { title: "Ειδικές εφαρμογές", body: "Διορθώσεις σε μέση, στήθος, στρίφωμα με σεβασμό στο πατρόν." },
-      { title: "Επιδιόρθωση & ανανέωση", body: "Μπαλώματα, μανταρίσματα σε σημεία φθοράς." },
-      { title: "Υφάσματα σπιτιού", body: "Προσαρμογές σε κουρτίνες, μαξιλάρια και λευκά είδη με καθαρές ραφές." }
+      {
+        title: "Εφαρμογές στα μέτρα σας...",
+        body: "Μετατροπές σε μέση, στήθος και μήκος που σέβονται το στύλ του ρούχου, ή ακόμα και του δίνουν νέο αέρα!"
+      },
+      {
+        title: "Επιδιόρθωση & ανανέωση ρούχων!",
+        body: "Τι καλύτερο από το να βλέπετε το ρούχο σας να ξαναζωντανεύει!"
+      },
+      {
+        title: "Υφάσματα σπιτιού",
+        body: "Κουρτίνες ραμμένες στο σωστό μήκος, μαξιλαροθήκες και μαξιλάρες καναπέ, λευκά είδη..."
+      }
     ],
     contactHeading: "Επικοινωνία",
-    contactPhone: "<strong>Τηλ.:</strong> +30 210 0000 000",
-    contactEmail: "<strong>Email:</strong> contact@miranda.gr",
+    contactPhone: "<strong>Τηλ.:</strong> +30 210 5158929",
+    contactEmail: "<strong>Email:</strong> contact@mirandas.gr",
     contactAddress: "<strong>Διεύθυνση:</strong> Αυλώνος, Αθήνα",
     backTop: "Επιστροφή στην αρχή",
-    formTitle: "Κλείστε ραντεβού",
-    labelName: "Όνομα",
+    formTitle: "Κλείστε ραντεβού, αμέ! 🎔",
+    labelName: "Όνομα, Επώνυμο",
     labelEmail: "Email",
     labelDetails: "Τι χρειάζεστε;",
-    detailsPlaceholder: "Στρίφωμα, επιδιόρθωση, νυφικό κτλ.",
-    labelPhotos: "Ανέβασμα φωτογραφιών",
+    detailsPlaceholder: "Στρίφωμα, μπάλωμα, πρόβα νυφικού, σακάκια, μια ιδέα...",
+    labelPhotos: "Μεταφόρτωση φωτογραφίας",
     formSubmit: "Αποστολή",
-    formSending: "Στέλνεται…",
-    formNote: "Στείλτε το αίτημά σας, την πρόταση ή την ιδέα σας και θα επικοινωνήσουμε σύντομα μαζί σας!",
-    formConfirm: "Το μήνυμά σας εστάλη. Θα απαντήσουμε το συντομότερο. Ευχαριστούμε!",
-    formError: "Δεν ήταν δυνατή η αποστολή. Παρακαλώ δοκιμάστε ξανά.",
+    formNote: "Στείλτε το αίτημά σας και θα απαντήσουμε σύντομα.",
+    formSending: "Αποστολή...",
+    formConfirm: "Το αίτημα εστάλη. Θα επικοινωνήσουμε σύντομα.",
+    formError: "Δεν στάλθηκε. Προσπαθήστε ξανά.",
     fileSelectedPrefix: "Επιλέχθηκαν",
-    footerNote: "© <span id=\"year\"></span> Miranda — Δημιουργικές επιδιορθώσεις & μεταποιήσεις",
+    footerNote: "&copy; <span id=\"year\"></span> Miranda 2026 - Δημιουργικές μεταποιήσεις & επιδιορθώσεις",
     footerAbout: "Σχετικά",
     footerContact: "Επικοινωνία"
   }
 };
+
+const translations = specTranslations;
+
 
 const LANG_STORAGE_KEY = "miranda-lang";
 
@@ -324,7 +351,6 @@ function applyTranslations(lang) {
   setText("about-title", t.aboutTitle);
   setText("about-lead", t.aboutLead);
   setText("specialties-title", t.specialtiesTitle);
-  setText("about-note", t.aboutNote);
 
   renderCards(currentLang);
 
@@ -366,37 +392,21 @@ function applyTranslations(lang) {
   }
 }
 
-function localeLooksGreek(locale = "") {
-  const value = String(locale || "").toLowerCase();
-  return value.startsWith("el") || value.endsWith("-gr") || value.endsWith("_gr");
-}
-
 function detectPreferredLanguage() {
   try {
     const cached = localStorage.getItem(LANG_STORAGE_KEY);
     if (cached === "en" || cached === "el") return cached;
-
-    const locales = [];
-    if (Array.isArray(navigator.languages) && navigator.languages.length) {
-      locales.push(...navigator.languages);
-    }
-    if (navigator.language) locales.push(navigator.language);
-    const resolved = Intl?.DateTimeFormat?.().resolvedOptions?.().locale;
-    if (resolved) locales.push(resolved);
-
-    const lang = locales.some(localeLooksGreek) ? "el" : "en";
-    localStorage.setItem(LANG_STORAGE_KEY, lang);
-    return lang;
-  } catch (_) {
-    return "el";
-  }
+  } catch (_) {}
+  return "el";
 }
 
 function setLanguage(lang) {
-  state.lang = lang === "en" ? "en" : "el";
+  currentLang = lang === "en" ? "en" : "el";
   try {
-    localStorage.setItem(LANG_STORAGE_KEY, state.lang);
+    localStorage.setItem(LANG_STORAGE_KEY, currentLang);
   } catch (_) {}
+  document.documentElement.lang = currentLang;
+  applyTranslations(currentLang);
 }
 
 function setYear() {
@@ -416,7 +426,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initGallery();
   initContactForm();
   setYear();
-  const initialLang = detectPreferredLanguage();
-  setLanguage(initialLang || "el");
+  setLanguage(detectPreferredLanguage());
   initLangToggle();
 });
