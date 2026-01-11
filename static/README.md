@@ -1,5 +1,11 @@
 # Miranda static site
 
+Live:
+- Website: https://mirandas.gr
+- AI Fabric Condition Rater: https://mirandas.gr/condition
+
+![alt text](assets/images/demo-condition.png)
+
 This folder contains a static, responsive recreation of the Miranda's atelier site plus the AI Fabric Condition Rater (no build tools).
 
 ## Files
@@ -51,3 +57,13 @@ Copy existing public assets into `static/assets/` to see images:
 1) Cloudflare Dashboard: create a Worker, paste `worker.js`, set env var `AI_API_KEY`, deploy.
 2) Cloudflare CLI (if already installed): `wrangler dev worker.js --local` or `wrangler deploy worker.js`.
 3) Map `/api/evaluate` to the Worker (route) so `condition.html` can POST to it.
+
+
+## Run locally (frontend + worker)
+
+# frontend
+cd static
+python3 -m http.server 8080
+
+# worker (example)
+# wrangler dev
