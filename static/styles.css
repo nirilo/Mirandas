@@ -146,17 +146,19 @@ h1,.display{font-family:"Playfair Display", Georgia, serif; letter-spacing:.2px;
 }
 .brand{font-weight:800;  text-decoration:none; color:var(--ink); font-size:1.05rem;}
 .brand i{font-style:normal; letter-spacing:0; font-weight:400;}
-.brand-logo{height:100px; width:auto; display:flexbox; padding-left: 20px;}
+.brand-logo{height:80px; width:auto; display:flexbox; padding-left: 20px;}
 
 .links{display:flex; align-items:center; justify-content:center; gap:1rem;}
 .links a{margin:0; text-decoration:none; color:var(--ink); font-weight:700;}
 .links a:hover{color:var(--accent);}
 .lang-toggle{
-  margin-left:1rem; padding:.45rem .75rem; border-radius:999px; border:1px solid #d6cbb5;
+  margin-left: 1rem; padding:.45rem .75rem; border-radius:999px; border:1px solid #d6cbb5;
   background:var(--orange); color:var(--ink); font-weight:800; cursor:pointer;
   box-shadow:0 2px 0 rgba(0,0,0,.08);
 }
 .lang-toggle:hover{filter:brightness(1.05);}
+
+
 .menu-toggle{
   display:none; align-items:center; justify-content:center; width:44px; height:44px;
   border-radius:60%; border:1px solid rgba(0,0,0,.08); background: var(--menu-btn-bg); color: var(--menu-btn-ink);
@@ -166,7 +168,7 @@ h1,.display{font-family:"Playfair Display", Georgia, serif; letter-spacing:.2px;
 .menu-icon,
 .menu-icon::before,
 .menu-icon::after{
-  display:block; width:20px; height:2px; background: var(--paper); border-radius:999px;
+  display:block; width:20px; height:2px; background: var(--menu-btn-ink); border-radius:999px;
   position:relative; transition:transform .2s ease, opacity .2s ease;
 }
 .menu-icon::before,
@@ -215,6 +217,7 @@ body.menu-open .mobile-menu{
 @media (min-width: 768px) and (max-width: 1023.98px) {
   .brand{padding-left: 20px;}
   .brand-logo{height: 90px;}
+  .lang-toggle{margin-right: 2rem;}
 }
 
 @media (max-width: 767.98px){
@@ -230,7 +233,7 @@ body.menu-open .mobile-menu{
   }
   .brand{display:flex; align-items:center;}
   .brand picture{display:flex; align-items:center;}
-  .brand-logo{height:60px; width:auto; padding-left:10; display:block;}
+  .brand-logo{height:60px; width:auto; display:block; margin-left: 0.01rem;}
   .links{display:none;}
   .menu-toggle{
     display:inline-flex;
@@ -239,6 +242,7 @@ body.menu-open .mobile-menu{
     height:40px;
     width:40px;
     padding:0;
+    margin-right: .5rem;
   }
   .lang-toggle{display:none;}
   .mobile-menu .lang-toggle{
