@@ -242,7 +242,7 @@ body.menu-open .mobile-menu{
     height:40px;
     width:40px;
     padding:0;
-    margin-right: .5rem;
+    margin-right: 2rem;
   }
   .lang-toggle{display:none;}
   .mobile-menu .lang-toggle{
