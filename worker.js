@@ -58,10 +58,8 @@ async function handleEvaluate(request, env) {
     return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: corsHeaders(request) });
   }
 
-  const rateStatus = rateLimit(request);
-  if (!rateStatus.ok) {
-    return new Response(JSON.stringify({ error: "Too many requests. Please slow down." }), { status: 429, headers: corsHeaders(request) });
-  }
+  const rl = rateLimit(request);
+  if (!rl.ok) return rateLimitResponse(request, rl);
 
   const contentType = request.headers.get("content-type") || "";
   if (!contentType.toLowerCase().includes("multipart/form-data")) {
@@ -83,6 +81,7 @@ async function handleEvaluate(request, env) {
 
   const photos = ["photo1", "photo2", "photo3"].map((key) => form.get(key));
   const itemType = (form.get("itemType") || "").toString().trim().toLowerCase();
+  const lang = (form.get("lang") || "el").toString().trim().toLowerCase();
 
   if (!itemType || !["clothing", "curtain", "other fabric"].includes(itemType)) {
     return new Response(JSON.stringify({
@@ -135,7 +134,7 @@ async function handleEvaluate(request, env) {
 
   try {
 
-    const payload = await runEvaluation(photos, itemType, env);
+    const payload = await runEvaluation(photos, itemType, env, lang);
     return new Response(JSON.stringify(payload), { status: 200, headers: corsHeaders(request) });
   } catch (err) {
     
@@ -146,7 +145,7 @@ async function handleEvaluate(request, env) {
   }
 }
 
-async function runEvaluation(files, itemType, env) {
+async function runEvaluation(files, itemType, env, lang = "el") {
   const key = env?.AI_API_KEY;
   if (!key) {
     return mockResponse("No AI_API_KEY set. Returning mock response.");
@@ -160,6 +159,7 @@ async function runEvaluation(files, itemType, env) {
       return mockResponse("Could not process images. Returning mock response.");
     }
   }
+  const targetLang = (lang || "").toLowerCase().startsWith("el") ? "Greek" : "English";
   const rubric = `
     You are a fabric condition rater. Score 1-5 using:
     1 Unwearable: major tears/holes, heavy staining, severe degradation
@@ -167,10 +167,12 @@ async function runEvaluation(files, itemType, env) {
     3 Home use: noticeable wear/stains/fading/pilling; ok mainly for home
     4 Used but wearable: minor signs; no major defects
     5 Like new: no visible defects
-    Refuse non-fabric items. Output JSON with keys: score (1-5 or null), label, confidence (0-1), confidence_label (low|medium|high), issues (array of short issue strings), repair_needed (bool), advice (string). If you return a field named stage, also include score with the same value. All text values (label, issues, advice/notes/comments) must be written in Greek; keep the JSON keys in English.
+    Strict rule: If this is not a fabric/cloth item (e.g., shoes, watches, electronics, hard objects, furniture, people, pets, scenery) OR you cannot clearly identify fabric condition, DO NOT guess a score. Return JSON with: score: null; stage: null (or omit); label: a ${targetLang} phrase for "Non-fabric item"; confidence: 0-1; confidence_label: low|medium|high; issues: []; repair_needed: false; advice: a short ${targetLang} message telling the user to upload a fabric item (clothing/curtain/textile) with clear photos.
+    Refuse to guess a fabric score for non-fabric items.
+    Output JSON with keys: score (1-5 or null), label, confidence (0-1), confidence_label (low|medium|high), issues (array of short issue strings), repair_needed (bool), advice (string). If you return a field named stage, also include score with the same value. All text values (label, issues, advice/notes/comments) must be written in ${targetLang}; keep the JSON keys in English.
   `.trim();
 
-  const userText = `Item type: ${itemType}. Rate the fabric condition from the three photos. Reply in Greek.`;
+  const userText = `Item type: ${itemType}. Rate the fabric condition from the three photos. Reply in ${targetLang}.`;
   const visionPayload = {
     model: "gpt-4o-mini",
     temperature: 0.2,
@@ -206,8 +208,16 @@ async function runEvaluation(files, itemType, env) {
   }
   const json = JSON.parse(bodyText);
   const text = json?.choices?.[0]?.message?.content || "";
-  return safeParseResponse(text);
+  return safeParseResponse(text, lang);
 }
+
+/*
+Example fabric response:
+{"score":4,"stage":4,"label":"Ready to wear","confidence":0.68,"confidence_label":"medium","issues":["Minor fading"],"repair_needed":false,"advice":"Light wash and you are set."}
+
+Example non-fabric response:
+{"score":null,"stage":null,"label":"Non-fabric item","confidence":0.3,"confidence_label":"low","issues":[],"repair_needed":false,"advice":"Please upload clothing, curtains, or other fabrics with clear photos for a proper check."}
+*/
 
 function corsHeaders(request) {
   const origin = request.headers.get("Origin") || "";
@@ -230,16 +240,16 @@ function corsHeaders(request) {
   return h;
 }
 
-function safeParseResponse(text) {
+function safeParseResponse(text, lang = "el") {
   try {
     const parsed = JSON.parse(text);
-    return normalizePayload(parsed);
+    return normalizePayload(parsed, lang);
   } catch (err) {
     return mockResponse("AI response could not be parsed. Returning mock.");
   }
 }
 
-function normalizePayload(data) {
+function normalizePayload(data, lang = "el") {
   const rawScore = data.score ?? data.stage ?? null;
   const hasScore = rawScore !== null && rawScore !== undefined && rawScore !== "";
   const numericScore = hasScore ? Number(rawScore) : NaN;
@@ -250,20 +260,30 @@ function normalizePayload(data) {
     : Array.isArray(data.issues_detected)
       ? data.issues_detected
       : [];
+  const nonFabricFallback = lang.toLowerCase().startsWith("el")
+    ? {
+        label: "Μη υφασμάτινο αντικείμενο",
+        advice: "Ανέβασε ένδυμα, κουρτίνα ή άλλο υφασμάτινο με καθαρές φωτογραφίες."
+      }
+    : {
+        label: "Non-fabric item",
+        advice: "Upload clothing, curtains, or other fabrics with clear photos."
+      };
+
   const advice = data.advice || data.comments || data.notes || "";
   const labelIdx = score ? score - 1 : null;
   const fallbackLabel = Number.isInteger(labelIdx) && labelIdx >= 0 ? stageLabels()[labelIdx] : null;
   return {
     score,
     stage: score,
-    label: fallbackLabel || "Rated",
+    label: data.label || fallbackLabel || (score === null ? nonFabricFallback.label : "Rated"),
     confidence: Number.isFinite(conf) ? conf : 0,
     confidence_label: data.confidence_label || confidenceLabel(conf),
     issues,
     issues_detected: issues,
     repair_needed: typeof data.repair_needed === "boolean" ? data.repair_needed : Boolean(data.repair),
-    advice,
-    notes: advice
+    advice: advice || (score === null ? nonFabricFallback.advice : ""),
+    notes: advice || (score === null ? nonFabricFallback.advice : "")
   };
 }
 
@@ -412,10 +432,8 @@ async function handleContact(request, env) {
       return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: corsHeaders(request) });
     }
 
-    const rateStatus = rateLimit(request);
-    if (!rateStatus.ok) {
-      return new Response(JSON.stringify({ error: "Too many requests. Please slow down." }), { status: 429, headers: corsHeaders(request) });
-    }
+    const rl = rateLimit(request);
+    if (!rl.ok) return rateLimitResponse(request, rl);
 
     const contentType = request.headers.get("content-type") || "";
     if (!contentType.toLowerCase().includes("multipart/form-data")) {
@@ -569,71 +587,70 @@ async function toBase64(file) {
   return btoa(chunks.join(""));
 }
 
-const rateMap = new Map();
-function rateLimit(request) {
-  const now = Date.now();
-  const WINDOW = 60_000;
-  const LIMIT = 20;
-  const key = request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for") || "anon";
-  const bucket = rateMap.get(key) || [];
-  const recent = bucket.filter((ts) => now - ts < WINDOW);
-  if (recent.length >= LIMIT) {
-    rateMap.set(key, recent);
-    return { ok: false };
-  }
-  recent.push(now);
-  rateMap.set(key, recent);
-  return { ok: true };
-}
-
 function looksLikeEmail(value) {
   const s = String(value || "").trim();
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 }
+// todo rate limiter : better version later (deliver protection for kv etc)
+const rateMap = new Map();
 
+function getClientIp(request) {
+  const cfIp = request.headers.get("cf-connecting-ip");
+  if (cfIp) return cfIp;
 
-// //todo fake rate limiter : better version later (deliver protection for kv etc)
-// const rateMap = new Map();
+  const xff = request.headers.get("x-forwarded-for");
+  if (xff) return xff.split(",")[0].trim();
 
-// function getClientIp(request) {
-//   const cfIp = request.headers.get("cf-connecting-ip");
-//   if (cfIp) return cfIp;
+  return "anon";
+}
 
-//   const xff = request.headers.get("x-forwarded-for");
-//   if (xff) return xff.split(",")[0].trim();
+function rateLimit(request) {
+  const now = Date.now();
+  const WINDOW_MS = 60_000;
+  const LIMIT = 20;
 
-//   return "anon";
-// }
+  const key = getClientIp(request);
+  const bucket = rateMap.get(key) || [];
 
-// function rateLimit(request) {
-//   const now = Date.now();
-//   const WINDOW_MS = 60_000;
-//   const LIMIT = 20;
+  const recent = bucket.filter((ts) => now - ts < WINDOW_MS);
 
-//   const key = getClientIp(request);
-//   const bucket = rateMap.get(key) || [];
+  if (recent.length >= LIMIT) {
+    rateMap.set(key, recent);
+    const oldest = recent[0];
+    const retryAfterMs = WINDOW_MS - (now - oldest);
+    return { ok: false, retryAfterSec: Math.max(1, Math.ceil(retryAfterMs / 1000)) };
+  }
 
-//   // keep only timestamps within window
-//   const recent = bucket.filter(ts => now - ts < WINDOW_MS);
+  recent.push(now);
+  rateMap.set(key, recent);
 
-//   if (recent.length >= LIMIT) {
-//     rateMap.set(key, recent);
-//     const oldest = recent[0];
-//     const retryAfterMs = WINDOW_MS - (now - oldest);
-//     return { ok: false, retryAfterSec: Math.ceil(retryAfterMs / 1000) };
-//   }
+  // tiny opportunistic cleanup (optional)
+  if (rateMap.size > 5000 && Math.random() < 0.01) {
+    for (const [k, arr] of rateMap.entries()) {
+      const pruned = arr.filter((ts) => now - ts < WINDOW_MS);
+      if (pruned.length === 0) rateMap.delete(k);
+      else rateMap.set(k, pruned);
+    }
+  }
 
-//   recent.push(now);
-//   rateMap.set(key, recent);
+  return { ok: true };
+}
 
-//   // tiny opportunistic cleanup (optional)
-//   if (rateMap.size > 5000 && Math.random() < 0.01) {
-//     for (const [k, arr] of rateMap.entries()) {
-//       const pruned = arr.filter(ts => now - ts < WINDOW_MS);
-//       if (pruned.length === 0) rateMap.delete(k);
-//       else rateMap.set(k, pruned);
-//     }
-//   }
+function rateLimitResponse(request, rl) {
+  return new Response(
+    JSON.stringify({
+      error: "Too many requests. Please slow down.",
+      retry_after_seconds: rl.retryAfterSec ?? 60,
+    }),
+    {
+      status: 429,
+      headers: {
+        ...corsHeaders(request),
+        "content-type": "application/json",
+        // standard header clients can respect
+        "Retry-After": String(rl.retryAfterSec ?? 60),
+      },
+    }
+  );
+}
 
-//   return { ok: true };
-// }

@@ -54,9 +54,11 @@ const specTranslations = {
       other: "Other fabric"
     },
     finalReady: "Ready to evaluate all three photos.",
+    finalLoading: "Evaluating…",
     back: "Back",
     next: "Next",
     evaluate: "Evaluate",
+    evaluating: "Evaluating…",
     resultTitle: "Result",
     resultSubtitle: "Score, noticed issues, and quick care advice",
     labels: {
@@ -102,8 +104,11 @@ const specTranslations = {
       "Ready to wear",
       "Like new sweetheart!"
     ],
-    mockNotes: "Mock response - add your AI key to the worker for live scoring.",
-    errors: { image: "Could not process the image. Try again." }
+    mockNotes: "Mock response.",
+    errors: {
+      image: "Could not process the image. Try again.",
+      evaluate: "Something went wrong. We showed a mock result—please try again."
+    }
   },
 
   el: {
@@ -207,7 +212,7 @@ const specTranslations = {
       "Σαν καινούριο, εύγε."
     ],
     mockNotes:
-      "Δοκιμαστική απάντηση - προσθέστε AI key στο worker για ζωντανή βαθμολόγηση.",
+      "Δοκιμαστική απάντηση.",
     errors: { image: "Δεν ήταν δυνατή η επεξεργασία της εικόνας. Δοκιμάστε ξανά." }
   }
 };
@@ -225,6 +230,7 @@ const state = {
   photos: [null, null, null],
   itemType: "clothing",
   lang: "el",
+  isEvaluating: false,
 };
 
 const progressBar = document.getElementById("progress-bar");
@@ -241,6 +247,8 @@ const resultNotes = document.getElementById("result-notes");
 const resultTips = document.getElementById("result-tips");
 const langToggle = document.getElementById("lang-toggle");
 const mobileLangToggle = document.getElementById("mobile-lang-toggle");
+const wizardActions = document.querySelector(".wizard-actions");
+let evaluateErrorEl = null;
 
 function t() {
   return translations[state.lang] || translations.en;
@@ -265,6 +273,9 @@ function setLanguage(lang) {
   attachStepEvents();
   restorePreviews();
   applyStaticText();
+  toggleStepInputs(state.isEvaluating);
+  setPreviewLoading(state.isEvaluating);
+  setEvaluateError("");
   updateButtons();
   showStep(state.current);
 }
@@ -330,6 +341,7 @@ function renderSteps() {
       </div>
     </article>
   `;
+  setPreviewLoading(state.isEvaluating);
 }
 
 function updateProgress() {
@@ -341,16 +353,106 @@ function updateProgress() {
   if (progressBar) progressBar.style.width = `${pct}%`;
 }
 
+function safeCopy(value, fallback) {
+  if (typeof value !== "string" || !value.trim()) return fallback;
+  if (/[ƒ�]/.test(value)) return fallback;
+  return value;
+}
+
+function evaluatingCopy() {
+  const fallback = state.lang === "el" ? "Αξιολόγηση..." : "Evaluating...";
+  return safeCopy(t().evaluating, fallback);
+}
+
+function previewLoadingCopy() {
+  const fallback = state.lang === "el" ? "Αξιολόγηση..." : "Evaluating...";
+  return safeCopy(t().finalLoading, fallback);
+}
+
+function evaluateErrorCopy() {
+  const fallback = state.lang === "el"
+    ? "Κάτι πήγε στραβά. Αυτό ένα δοκιμαστικό. Δοκιμάστε ξανά."
+    : "Something went wrong. Showing a mock result. Please try again.";
+  const custom = t().errors && t().errors.evaluate;
+  return safeCopy(custom, fallback);
+}
+
 function updateButtons() {
   backBtn.textContent = t().back;
   const totalSteps = t().steps.length;
-  if (state.current < totalSteps) {
-    nextBtn.textContent = t().next;
-    nextBtn.disabled = !state.photos[state.current];
+  const onFinalStep = state.current >= totalSteps;
+
+  if (state.isEvaluating) {
+    nextBtn.innerHTML = `<span class="btn-spinner" aria-hidden="true"></span>${evaluatingCopy()}`;
+    nextBtn.disabled = true;
   } else {
-    nextBtn.textContent = t().evaluate;
-    nextBtn.disabled = state.photos.some((p) => !p);
+    nextBtn.textContent = onFinalStep ? t().evaluate : t().next;
+    nextBtn.disabled = onFinalStep
+      ? state.photos.some((p) => !p)
+      : !state.photos[state.current];
   }
+
+  nextBtn.setAttribute("aria-disabled", String(nextBtn.disabled || state.isEvaluating));
+  nextBtn.setAttribute("aria-busy", String(state.isEvaluating));
+  backBtn.disabled = state.isEvaluating || state.current === 0;
+  backBtn.setAttribute("aria-disabled", String(backBtn.disabled));
+}
+
+function setPreviewLoading(isLoading) {
+  const finalPreview = document.getElementById("final-preview");
+  if (!finalPreview) return;
+  finalPreview.setAttribute("aria-busy", String(isLoading));
+  const message = isLoading ? previewLoadingCopy() : t().finalReady;
+  finalPreview.innerHTML = `<div class="micro muted">${message}</div>`;
+}
+
+function toggleStepInputs(disabled) {
+  const fields = document.querySelectorAll(
+    ".step input, .step select, .step button.retake"
+  );
+  fields.forEach((el) => {
+    el.disabled = disabled;
+    el.setAttribute("aria-disabled", String(disabled));
+  });
+}
+
+function getEvaluateErrorEl() {
+  if (evaluateErrorEl && document.body.contains(evaluateErrorEl)) {
+    return evaluateErrorEl;
+  }
+  const el = document.createElement("div");
+  el.id = "evaluate-error";
+  el.className = "form-error";
+  el.hidden = true;
+  el.setAttribute("role", "alert");
+  if (wizardActions) {
+    wizardActions.appendChild(el);
+  } else if (nextBtn && nextBtn.parentElement) {
+    nextBtn.parentElement.appendChild(el);
+  } else {
+    document.body.appendChild(el);
+  }
+  evaluateErrorEl = el;
+  return evaluateErrorEl;
+}
+
+function setEvaluateError(message) {
+  const el = getEvaluateErrorEl();
+  if (!el) return;
+  if (!message) {
+    el.textContent = "";
+    el.hidden = true;
+    return;
+  }
+  el.textContent = message;
+  el.hidden = false;
+}
+
+function setEvaluating(value) {
+  state.isEvaluating = Boolean(value);
+  updateButtons();
+  toggleStepInputs(state.isEvaluating);
+  setPreviewLoading(state.isEvaluating);
 }
 
 function showStep(idx) {
@@ -547,50 +649,54 @@ function mockResponse() {
 }
 
 async function evaluate() {
-  nextBtn.disabled = true;
-  nextBtn.textContent = t().evaluate;
+  if (state.isEvaluating) return;
+  setEvaluateError("");
+  setEvaluating(true);
 
+  const lang = (document.documentElement.lang || "el").toLowerCase();
   const form = new FormData();
   state.photos.forEach((file, idx) => {
-    form.append(`photo${idx + 1}`, file, file.name);
+    if (file) form.append(`photo${idx + 1}`, file, file.name);
   });
   form.append("itemType", state.itemType);
+  if (!lang.startsWith("el")) {
+    form.append("lang", lang);
+  }
 
   try {
-    //todo
-    const res = await fetch("/api/evaluate", { method: "POST", body: form });
+  const res = await fetch("/api/evaluate", { method: "POST", body: form });
 
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("Server returned:", res.status, text);
+    throw new Error(`HTTP ${res.status}: ${text.slice(0, 300)}`);
+  }
 
-   if (!res.ok) {
+  //Parse JSON safely (in case content-type is wrong)
+  const ct = res.headers.get("content-type") || "";
+  let data;
+  if (ct.includes("application/json")) {
+     data = await res.json();
+  } else {
      const text = await res.text();
-     console.error("Server returned:", res.status, text);
-     throw new Error(`HTTP ${res.status}: ${text.slice(0, 300)}`);
-   }
-
-
-    // Parse JSON safely (in case content-type is wrong)
-    const ct = res.headers.get("content-type") || "";
-    let data;
-    if (ct.includes("application/json")) {
-      data = await res.json();
-    } else {
-      const text = await res.text();
-      try {
-        data = JSON.parse(text);
-      } catch {
-        throw new Error(`Expected JSON but got: ${text.slice(0, 300)}`);
-      }
+    try {
+       data = JSON.parse(text);
+    } catch {
+       throw new Error(`Expected JSON but got: ${text.slice(0, 300)}`);
     }
-
-    renderResult(data);
+  }
+  setEvaluateError("");
+  renderResult(data);
   } catch (err) {
     console.warn("Falling back to mock", err);
+    setEvaluateError(evaluateErrorCopy());
     renderResult(mockResponse());
   } finally {
-    nextBtn.disabled = false;
-    nextBtn.textContent = t().evaluate;
+    setEvaluating(false);
   }
 }
+
+
 function setYear() {
   const yearSpan = document.getElementById("year");
   if (yearSpan) yearSpan.textContent = new Date().getFullYear();
@@ -667,11 +773,13 @@ function setUpNavigation() {
   });
 
   backBtn.addEventListener("click", () => {
+    if (state.isEvaluating) return;
     state.current = Math.max(0, state.current - 1);
     showStep(state.current);
   });
 
   nextBtn.addEventListener("click", () => {
+    if (state.isEvaluating) return;
     const totalSteps = t().steps.length;
     if (state.current < totalSteps) {
       state.current += 1;
