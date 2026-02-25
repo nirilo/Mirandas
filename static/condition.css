@@ -71,6 +71,7 @@
 
 .wizard-actions{
   display:flex; justify-content:space-between; align-items:center; gap:1rem;
+  flex-wrap:wrap;
 }
 .wizard-actions .btn{min-width:140px; text-align:center;}
 
@@ -101,6 +102,30 @@
 .status{
   display:inline-flex; align-items:center; gap:.35rem;
   padding:.35rem .6rem; border-radius:10px; background:rgba(0,0,0,.04);
+}
+
+.btn-spinner{
+  width:1em; height:1em;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.35);
+  border-top-color:rgba(255,255,255,.85);
+  display:inline-block;
+  margin-right:.45rem;
+  vertical-align:-0.15em;
+  animation:spin .8s linear infinite;
+}
+.btn.btn-secondary .btn-spinner{
+  border-color:rgba(0,0,0,.15);
+  border-top-color:rgba(0,0,0,.5);
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.form-error{
+  width:100%;
+  margin-top:.35rem;
+  color:#b24343;
+  font-weight:600;
+  display:block;
 }
 
 @media (max-width:640px){
