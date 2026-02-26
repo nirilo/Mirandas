@@ -83,6 +83,7 @@ async function handleEvaluate(request, env) {
 
   const photos = ["photo1", "photo2", "photo3"].map((key) => form.get(key));
   const itemType = (form.get("itemType") || "").toString().trim().toLowerCase();
+  const lang = (form.get("lang") || "").toString().trim().toLowerCase();
 
   if (!itemType || !["clothing", "curtain", "other fabric"].includes(itemType)) {
     return new Response(JSON.stringify({
@@ -135,7 +136,7 @@ async function handleEvaluate(request, env) {
 
   try {
 
-    const payload = await runEvaluation(photos, itemType, env);
+    const payload = await runEvaluation(photos, itemType, env, lang);
     return new Response(JSON.stringify(payload), { status: 200, headers: corsHeaders(request) });
   } catch (err) {
     
@@ -146,8 +147,10 @@ async function handleEvaluate(request, env) {
   }
 }
 
-async function runEvaluation(files, itemType, env) {
+async function runEvaluation(files, itemType, env, langInput) {
   const key = env?.AI_API_KEY;
+  const responseLang = langInput === "en" ? "en" : "el";
+  const languageName = responseLang === "en" ? "English" : "Greek";
   if (!key) {
     return mockResponse("No AI_API_KEY set. Returning mock response.");
   }
@@ -167,10 +170,10 @@ async function runEvaluation(files, itemType, env) {
     3 Home use: noticeable wear/stains/fading/pilling; ok mainly for home
     4 Used but wearable: minor signs; no major defects
     5 Like new: no visible defects
-    Refuse non-fabric items. Output JSON with keys: score (1-5 or null), label, confidence (0-1), confidence_label (low|medium|high), issues (array of short issue strings), repair_needed (bool), advice (string). If you return a field named stage, also include score with the same value. All text values (label, issues, advice/notes/comments) must be written in Greek; keep the JSON keys in English.
+    Refuse non-fabric items. Output JSON with keys: score (1-5 or null), label, confidence (0-1), confidence_label (low|medium|high), issues (array of short issue strings), repair_needed (bool), advice (string). If you return a field named stage, also include score with the same value. All text values (label, issues, advice/notes/comments) must be written in ${languageName}; keep the JSON keys in English.
   `.trim();
 
-  const userText = `Item type: ${itemType}. Rate the fabric condition from the three photos. Reply in Greek.`;
+  const userText = `Item type: ${itemType}. Rate the fabric condition from the three photos. Reply in ${languageName}.`;
   const visionPayload = {
     model: "gpt-4o-mini",
     temperature: 0.2,

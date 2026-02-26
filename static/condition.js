@@ -555,6 +555,7 @@ async function evaluate() {
     form.append(`photo${idx + 1}`, file, file.name);
   });
   form.append("itemType", state.itemType);
+  form.append("lang", state.lang);
 
   try {
     //todo
