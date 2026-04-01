@@ -81,6 +81,9 @@
   order:0;
   margin-bottom:.5rem;
 }
+.turnstile-wrap[hidden]{
+  display:none !important;
+}
 .wizard-actions .btn{
   order:1;
 }
