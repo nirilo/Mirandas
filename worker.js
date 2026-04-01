@@ -156,8 +156,9 @@ async function handleEvaluate(request, env) {
 
 async function runEvaluation(files, itemType, env, lang = "el") {
   const key = env?.AI_API_KEY;
-  const responseLang = langInput === "en" ? "en" : "el";
-  const languageName = responseLang === "en" ? "English" : "Greek";
+  const normalizedLang = typeof lang === "string" ? lang.toLowerCase() : "el";
+  const responseLang = normalizedLang.startsWith("en") ? "en" : "el";
+  const targetLang = responseLang === "en" ? "English" : "Greek";
   if (!key) {
     return mockResponse("No AI_API_KEY set. Returning mock response.");
   }
@@ -170,7 +171,6 @@ async function runEvaluation(files, itemType, env, lang = "el") {
       return mockResponse("Could not process images. Returning mock response.");
     }
   }
-  const targetLang = (lang || "").toLowerCase().startsWith("el") ? "Greek" : "English";
   const rubric = `
     You are a fabric condition rater. Score 1-5 using:
     1 Unwearable: major tears/holes, heavy staining, severe degradation
@@ -219,7 +219,7 @@ async function runEvaluation(files, itemType, env, lang = "el") {
   }
   const json = JSON.parse(bodyText);
   const text = json?.choices?.[0]?.message?.content || "";
-  return safeParseResponse(text, lang);
+  return safeParseResponse(text, responseLang);
 }
 
 /*
