@@ -146,11 +146,8 @@ async function handleEvaluate(request, env) {
     const payload = await runEvaluation(photos, itemType, env, lang);
     return new Response(JSON.stringify(payload), { status: 200, headers: corsHeaders(request) });
   } catch (err) {
-    
-    const mock = mockResponse("Service unavailable, returning mock.");
-    mock.mock = true;
     console.error("Evaluation failed:", err?.stack || err);
-    return new Response(JSON.stringify(mock), { status: 503, headers: corsHeaders(request) });
+    return jsonError(request, 503, { error: "Evaluation failed" });
   }
 }
 
@@ -160,7 +157,7 @@ async function runEvaluation(files, itemType, env, lang = "el") {
   const responseLang = normalizedLang.startsWith("en") ? "en" : "el";
   const targetLang = responseLang === "en" ? "English" : "Greek";
   if (!key) {
-    return mockResponse("No AI_API_KEY set. Returning mock response.");
+    throw new Error("Missing AI_API_KEY");
   }
 
   const imagesBase64 = [];
@@ -168,7 +165,7 @@ async function runEvaluation(files, itemType, env, lang = "el") {
     try {
       imagesBase64.push(await toBase64(file));
     } catch (err) {
-      return mockResponse("Could not process images. Returning mock response.");
+      throw err;
     }
   }
   const rubric = `
@@ -267,7 +264,7 @@ function safeParseResponse(text, lang = "el") {
     const parsed = JSON.parse(text);
     return normalizePayload(parsed, lang);
   } catch (err) {
-    return mockResponse("AI response could not be parsed. Returning mock.");
+    throw new Error("AI response could not be parsed.");
   }
 }
 
@@ -322,25 +319,6 @@ function clamp(v, min, max) {
 function stageLabels() {
   return ["Φθαρμένο (σόρρυ)", "Θέλει φροντίδα κ' προδέρμ", "Καλούτσικη κατάσταση", "Έτοιμο για έξω, πένα!", "Σαν καινούριο, εύγε."];
 }
-
-function mockResponse(notes) {
-  const score = 4;
-  const advice = notes || "Mock response: add your AI key for live scoring.";
-  return {
-    mock: true,
-    score,
-    stage: score,
-    label: stageLabels()[score - 1],
-    confidence: 0.52,
-    confidence_label: "medium",
-    issues: ["Mock: sample wear note"],
-    issues_detected: ["Mock: sample wear note"],
-    repair_needed: false,
-    advice,
-    notes: advice
-  };
-}
-
 
 async function handleContactRoutes(request, env, url) {
   if (request.method === "OPTIONS") {

@@ -51,7 +51,7 @@ Copy existing public assets into `static/assets/` to see images:
 }
 ```
 - Logic: rejects non-fabric items, enforces payload limits, processes images in-memory only, discards after response.
-- AI: calls a vision model with a rubric; if `AI_API_KEY` is missing, returns a mock response so the UI still works.
+- AI: calls a vision model with a rubric; if `AI_API_KEY` is missing, the API returns an error.
 
 ### Deploy / run (no npm steps)
 1) Cloudflare Dashboard: create a Worker, paste `worker.js`, set env var `AI_API_KEY`, deploy.

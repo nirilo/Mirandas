@@ -82,8 +82,8 @@ const specTranslations = {
       a1: "No. They're compressed in your browser, sent for scoring, then discarded.",
       q2: "Supported items?",
       a2: "Clothing, curtains, and other fabrics. Shoes/electronics/jewelry are refused.",
-      q3: "No AI key?",
-      a3: "You'll see a mock response so you can test the flow."
+      q3: "Live evaluation unavailable?",
+      a3: "Live evaluation is temporarily unavailable. Please try again."
     },
     footer: {
       note: "&copy; <span id=\"year\"></span> Miranda - Creative repairs & alterations",
@@ -104,10 +104,9 @@ const specTranslations = {
       "Ready to wear",
       "Like new sweetheart!"
     ],
-    mockNotes: "Mock response.",
     errors: {
       image: "Could not process the image. Try again.",
-      evaluate: "Something went wrong. We showed a mock result—please try again."
+      evaluate: "Live evaluation is temporarily unavailable. Please try again."
     }
   },
 
@@ -189,8 +188,8 @@ const specTranslations = {
       a1: "Όχι. Συμπιέζονται στο browser σας, στέλνονται για βαθμολόγηση και μετά διαγράφονται.",
       q2: "Τι είδη υποστηρίζονται;",
       a2: "Ρούχα, κουρτίνες και άλλα υφάσματα. Παπούτσια/ηλεκτρονικά/κοσμήματα απορρίπτονται.",
-      q3: "Χωρίς κλειδί AI;",
-      a3: "Θα δείτε δοκιμαστική απάντηση για να ελέγξετε τη ροή."
+      q3: "Live evaluation unavailable?",
+      a3: "Live evaluation is temporarily unavailable. Please try again."
     },
     footer: {
       note: "&copy; <span id=\"year\"></span> Miranda - Δημιουργικές επιδιορθώσεις & μεταποιήσεις",
@@ -211,9 +210,7 @@ const specTranslations = {
       "Έτοιμο για έξω, πένα!",
       "Σαν καινούριο, εύγε."
     ],
-    mockNotes:
-      "Δοκιμαστική απάντηση.",
-    errors: { image: "Δεν ήταν δυνατή η επεξεργασία της εικόνας. Δοκιμάστε ξανά." }
+    errors: { image: "Δεν ήταν δυνατή η επεξεργασία της εικόνας. Δοκιμάστε ξανά.", evaluate: "Live evaluation is temporarily unavailable. Please try again." }
   }
 };
 
@@ -369,15 +366,7 @@ function previewLoadingCopy() {
   return safeCopy(t().finalLoading, fallback);
 }
 
-function evaluateErrorCopy() {
-  const fallback = state.lang === "el"
-    ? "Κάτι πήγε στραβά. Αυτό ένα δοκιμαστικό. Δοκιμάστε ξανά."
-    : "Something went wrong. Showing a mock result. Please try again.";
-  const custom = t().errors && t().errors.evaluate;
-  return safeCopy(custom, fallback);
-}
-
-function turnstileErrorCopy() {
+function evaluateErrorCopy() {\n  const fallback = "Live evaluation is temporarily unavailable. Please try again.";\n  const custom = t().errors && t().errors.evaluate;\n  return safeCopy(custom, fallback);\n}\n\nfunction turnstileErrorCopy() {
   const fallback = "Please complete the security check and try again.";
   const custom = t().errors && t().errors.turnstile;
   return safeCopy(custom, fallback);
@@ -657,22 +646,6 @@ function renderResult(data) {
   resultTips.hidden = !lowConf;
   resultCard.hidden = false;
 }
-function mockResponse() {
-  const score = Math.ceil(Math.random() * 5);
-  const advice = t().mockNotes;
-  return {
-    mock: true,
-    score,
-    stage: score,
-    label: stageLabel(score),
-    confidence: 0.55,
-    confidence_label: "medium",
-    issues: ["Mock: seam wear", "Mock: loose thread"],
-    repair_needed: score <= 2,
-    advice,
-    notes: advice,
-  };
-}
 
 async function evaluate() {
   if (state.isEvaluating) return;
@@ -734,9 +707,9 @@ async function evaluate() {
     setEvaluateError("");
     renderResult(data);
   } catch (err) {
-    console.warn("Falling back to mock", err);
+    console.error("Evaluation failed:", err);
     setEvaluateError(evaluateErrorCopy());
-    renderResult(mockResponse());
+    if (resultCard) resultCard.hidden = true;
   } finally {
     resetTurnstileWidget();
     setEvaluating(false);
@@ -843,3 +816,12 @@ document.addEventListener("DOMContentLoaded", () => {
   setUpNavigation();
   setYear();
 });
+
+
+
+
+
+
+
+
+

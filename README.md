@@ -34,7 +34,7 @@ Open **locally**:
 - `http://localhost:8080/index.html`
 - `http://localhost:8080/condition.html`
 
-If no backend is available, the wizard falls back to a mock response.
+If no backend is available, the wizard shows an error.
 
 ## Deploy the Worker (Cloudflare)
 1. Create a Worker and paste `worker.js`.
@@ -48,8 +48,6 @@ If no backend is available, the wizard falls back to a mock response.
 Front-end Turnstile widgets use the site key set in:
 - `static/index.html` (contact form)
 - `static/condition.html` (condition rater)
-
-> Note: `worker.js` returns a mock response when `AI_API_KEY` is not set.
 
 ## Privacy & safety
 - The wizard compresses images in-browser before upload.
