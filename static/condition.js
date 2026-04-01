@@ -242,6 +242,7 @@ const resultRepair = document.getElementById("result-repair");
 const resultIssues = document.getElementById("result-issues-list");
 const resultNotes = document.getElementById("result-notes");
 const resultTips = document.getElementById("result-tips");
+const turnstileWrap = document.getElementById("condition-turnstile");
 const langToggle = document.getElementById("lang-toggle");
 const mobileLangToggle = document.getElementById("mobile-lang-toggle");
 const wizardActions = document.querySelector(".wizard-actions");
@@ -366,7 +367,13 @@ function previewLoadingCopy() {
   return safeCopy(t().finalLoading, fallback);
 }
 
-function evaluateErrorCopy() {\n  const fallback = "Live evaluation is temporarily unavailable. Please try again.";\n  const custom = t().errors && t().errors.evaluate;\n  return safeCopy(custom, fallback);\n}\n\nfunction turnstileErrorCopy() {
+function evaluateErrorCopy() {
+  const fallback = "Live evaluation is temporarily unavailable. Please try again.";
+  const custom = t().errors && t().errors.evaluate;
+  return safeCopy(custom, fallback);
+}
+
+function turnstileErrorCopy() {
   const fallback = "Please complete the security check and try again.";
   const custom = t().errors && t().errors.turnstile;
   return safeCopy(custom, fallback);
@@ -392,6 +399,11 @@ function resetTurnstileWidget() {
   } catch (_) {}
 }
 
+function updateTurnstileVisibility(onFinalStep) {
+  if (!turnstileWrap) return;
+  turnstileWrap.hidden = !onFinalStep;
+}
+
 function updateButtons() {
   backBtn.textContent = t().back;
   const totalSteps = t().steps.length;
@@ -411,6 +423,7 @@ function updateButtons() {
   nextBtn.setAttribute("aria-busy", String(state.isEvaluating));
   backBtn.disabled = state.isEvaluating || state.current === 0;
   backBtn.setAttribute("aria-disabled", String(backBtn.disabled));
+  updateTurnstileVisibility(onFinalStep);
 }
 
 function setPreviewLoading(isLoading) {

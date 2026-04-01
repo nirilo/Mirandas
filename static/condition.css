@@ -75,7 +75,14 @@
 }
 .wizard-actions .btn{min-width:140px; text-align:center;}
 .turnstile-wrap{
-  display:flex; justify-content:center;
+  display:flex;
+  justify-content:center;
+  flex-basis:100%;
+  order:0;
+  margin-bottom:.5rem;
+}
+.wizard-actions .btn{
+  order:1;
 }
 
 .select-row{
