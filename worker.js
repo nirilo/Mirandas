@@ -58,7 +58,7 @@ async function handleEvaluate(request, env) {
     return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: corsHeaders(request) });
   }
 
-  const rl = rateLimit(request);
+  const rl = await rateLimitEvaluate(request, env);
   if (!rl.ok) return rateLimitResponse(request, rl);
 
   const contentType = request.headers.get("content-type") || "";
@@ -77,6 +77,15 @@ async function handleEvaluate(request, env) {
     form = await request.formData();
   } catch (err) {
     return new Response(JSON.stringify({ error: "Invalid form data" }), { status: 400, headers: corsHeaders(request) });
+  }
+
+  const token = form.get("cf-turnstile-response");
+  const turnstile = await verifyTurnstile(request, env, token);
+  if (!turnstile.ok) {
+    return jsonError(request, turnstile.status, {
+      error: turnstile.error,
+      codes: turnstile.codes,
+    });
   }
 
   const photos = ["photo1", "photo2", "photo3"].map((key) => form.get(key));
@@ -240,6 +249,17 @@ function corsHeaders(request) {
   }
 
   return h;
+}
+
+function jsonError(request, status, payload, extraHeaders = {}) {
+  return new Response(JSON.stringify(payload), {
+    status,
+    headers: {
+      ...corsHeaders(request),
+      "content-type": "application/json",
+      ...extraHeaders,
+    },
+  });
 }
 
 function safeParseResponse(text, lang = "el") {
@@ -455,46 +475,15 @@ async function handleContact(request, env) {
       return new Response(JSON.stringify({ error: "Invalid form data" }), { status: 400, headers: corsHeaders(request) });
     }
 
+    const ip = getClientIp(request);
     const token = form.get("cf-turnstile-response");
-    const ip = request.headers.get("CF-Connecting-IP") || request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for") || "";
-
-    if (!token) {
-      return new Response(
-        JSON.stringify({ ok: false, error: "Missing Turnstile token" }),
-        {
-          status: 400,
-          headers: corsHeaders(request),
-        }
-      );
-    }
-
-    const verifyBody = new FormData();
-    verifyBody.append("secret", env.TURNSTILE_SECRET);
-    verifyBody.append("response", token);
-    if (ip) verifyBody.append("remoteip", ip);
-
-    const resp = await fetch(
-      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-      {
-        method: "POST",
-        body: verifyBody,
-      }
-    );
-
-    const outcome = await resp.json();
-
-    if (!outcome.success) {
-      return new Response(
-        JSON.stringify({
-          ok: false,
-          error: "Turnstile failed",
-          codes: outcome["error-codes"],
-        }),
-        {
-          status: 403,
-          headers: corsHeaders(request),
-        }
-      );
+    const turnstile = await verifyTurnstile(request, env, token, ip);
+    if (!turnstile.ok) {
+      return jsonError(request, turnstile.status, {
+        ok: false,
+        error: turnstile.error,
+        codes: turnstile.codes,
+      });
     }
 
   
@@ -593,11 +582,91 @@ function looksLikeEmail(value) {
   const s = String(value || "").trim();
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 }
+
+async function verifyTurnstile(request, env, token, ipOverride) {
+  if (!token) {
+    return { ok: false, status: 400, error: "Missing Turnstile token" };
+  }
+
+  const verifyBody = new FormData();
+  verifyBody.append("secret", env.TURNSTILE_SECRET);
+  verifyBody.append("response", token);
+
+  const ip = ipOverride || getClientIp(request);
+  if (ip && ip !== "anon") verifyBody.append("remoteip", ip);
+
+  const resp = await fetch(
+    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+    {
+      method: "POST",
+      body: verifyBody,
+    }
+  );
+
+  const outcome = await resp.json();
+
+  if (!outcome.success) {
+    return {
+      ok: false,
+      status: 403,
+      error: "Turnstile failed",
+      codes: outcome["error-codes"],
+    };
+  }
+
+  return { ok: true };
+}
+
+function toPositiveInt(value, fallback) {
+  const num = Number(value);
+  if (!Number.isFinite(num) || num <= 0) return fallback;
+  return Math.floor(num);
+}
+
+async function rateLimitEvaluate(request, env) {
+  const kv = env.EVALUATE_RATE_LIMIT_KV || env.CONTACT_KV;
+  const limit = toPositiveInt(env.EVALUATE_RATE_LIMIT_MAX, 20);
+  const windowSec = toPositiveInt(env.EVALUATE_RATE_LIMIT_WINDOW_SEC, 60);
+  return rateLimitKv(request, kv, {
+    prefix: "evaluate",
+    limit,
+    windowSec,
+  });
+}
+
+async function rateLimitKv(request, kv, { prefix, limit, windowSec }) {
+  if (!kv || typeof kv.get !== "function" || typeof kv.put !== "function") {
+    console.warn("Rate limit KV not configured; skipping durable rate limit.");
+    return { ok: true };
+  }
+
+  const windowMs = windowSec * 1000;
+  const now = Date.now();
+  const windowId = Math.floor(now / windowMs);
+  const key = `rl:${prefix}:${getClientIp(request)}:${windowId}`;
+
+  const stored = await kv.get(key);
+  const count = Number(stored);
+  const current = Number.isFinite(count) ? count : 0;
+
+  if (current >= limit) {
+    const resetAt = (windowId + 1) * windowMs;
+    const retryAfterSec = Math.max(1, Math.ceil((resetAt - now) / 1000));
+    return { ok: false, retryAfterSec };
+  }
+
+  await kv.put(key, String(current + 1), {
+    expirationTtl: windowSec + 5,
+  });
+
+  return { ok: true };
+}
+
 // todo rate limiter : better version later (deliver protection for kv etc)
 const rateMap = new Map();
 
 function getClientIp(request) {
-  const cfIp = request.headers.get("cf-connecting-ip");
+  const cfIp = request.headers.get("CF-Connecting-IP") || request.headers.get("cf-connecting-ip");
   if (cfIp) return cfIp;
 
   const xff = request.headers.get("x-forwarded-for");

@@ -377,6 +377,32 @@ function evaluateErrorCopy() {
   return safeCopy(custom, fallback);
 }
 
+function turnstileErrorCopy() {
+  const fallback = "Please complete the security check and try again.";
+  const custom = t().errors && t().errors.turnstile;
+  return safeCopy(custom, fallback);
+}
+
+function getTurnstileToken() {
+  if (!window.turnstile || typeof window.turnstile.getResponse !== "function") {
+    return "";
+  }
+  try {
+    return window.turnstile.getResponse() || "";
+  } catch (_) {
+    return "";
+  }
+}
+
+function resetTurnstileWidget() {
+  if (!window.turnstile || typeof window.turnstile.reset !== "function") {
+    return;
+  }
+  try {
+    window.turnstile.reset();
+  } catch (_) {}
+}
+
 function updateButtons() {
   backBtn.textContent = t().back;
   const totalSteps = t().steps.length;
@@ -659,37 +685,60 @@ async function evaluate() {
     if (file) form.append(`photo${idx + 1}`, file, file.name);
   });
   form.append("itemType", state.itemType);
+  const token = getTurnstileToken();
+  if (!token) {
+    setEvaluateError(turnstileErrorCopy());
+    resetTurnstileWidget();
+    setEvaluating(false);
+    return;
+  }
+  form.append("cf-turnstile-response", token);
 
   if (lang !== "el") form.append("lang", lang);
   try {
-  const res = await fetch("/api/evaluate", { method: "POST", body: form });
+    const res = await fetch("/api/evaluate", { method: "POST", body: form });
 
-  if (!res.ok) {
-    const text = await res.text();
-    console.error("Server returned:", res.status, text);
-    throw new Error(`HTTP ${res.status}: ${text.slice(0, 300)}`);
-  }
-
-  //Parse JSON safely (in case content-type is wrong)
-  const ct = res.headers.get("content-type") || "";
-  let data;
-  if (ct.includes("application/json")) {
-     data = await res.json();
-  } else {
-     const text = await res.text();
-    try {
-       data = JSON.parse(text);
-    } catch {
-       throw new Error(`Expected JSON but got: ${text.slice(0, 300)}`);
+    // Parse JSON safely (in case content-type is wrong)
+    const ct = res.headers.get("content-type") || "";
+    let data = null;
+    let rawText = "";
+    if (ct.includes("application/json")) {
+      data = await res.json();
+    } else {
+      rawText = await res.text();
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        data = null;
+      }
     }
-  }
-  setEvaluateError("");
-  renderResult(data);
+
+    if (!res.ok) {
+      const errorMessage =
+        data && typeof data.error === "string" ? data.error : "";
+      const isTurnstile =
+        (res.status === 400 || res.status === 403) &&
+        /turnstile/i.test(errorMessage);
+      if (isTurnstile) {
+        setEvaluateError(turnstileErrorCopy());
+        return;
+      }
+      console.error("Server returned:", res.status, data || rawText);
+      const snippet = rawText || JSON.stringify(data || {}).slice(0, 300);
+      throw new Error(`HTTP ${res.status}: ${snippet}`);
+    }
+
+    if (!data) {
+      throw new Error("Expected JSON but got empty response.");
+    }
+    setEvaluateError("");
+    renderResult(data);
   } catch (err) {
     console.warn("Falling back to mock", err);
     setEvaluateError(evaluateErrorCopy());
     renderResult(mockResponse());
   } finally {
+    resetTurnstileWidget();
     setEvaluating(false);
   }
 }

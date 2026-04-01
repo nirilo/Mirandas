@@ -39,7 +39,15 @@ If no backend is available, the wizard falls back to a mock response.
 ## Deploy the Worker (Cloudflare)
 1. Create a Worker and paste `worker.js`.
 2. Set `AI_API_KEY` as a Worker environment variable/secret.
-3. Route `*/api/evaluate` to the Worker so the static wizard can call it.
+3. Set `TURNSTILE_SECRET` as a Worker environment variable/secret (used by `/api/contact` and `/api/evaluate`).
+4. Configure rate limiting for `/api/evaluate`:
+   - KV binding: `EVALUATE_RATE_LIMIT_KV` (recommended) or reuse `CONTACT_KV`.
+   - Vars: `EVALUATE_RATE_LIMIT_MAX` (default 20), `EVALUATE_RATE_LIMIT_WINDOW_SEC` (default 60).
+5. Route `*/api/evaluate` to the Worker so the static wizard can call it.
+
+Front-end Turnstile widgets use the site key set in:
+- `static/index.html` (contact form)
+- `static/condition.html` (condition rater)
 
 > Note: `worker.js` returns a mock response when `AI_API_KEY` is not set.
 
