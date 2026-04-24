@@ -829,12 +829,3 @@ document.addEventListener("DOMContentLoaded", () => {
   setUpNavigation();
   setYear();
 });
-
-
-
-
-
-
-
-
-
