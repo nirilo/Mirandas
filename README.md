@@ -1,12 +1,12 @@
 # Mirandas ⁓ AI Fabric Condition Rater
 
-A lightweight, no-build static website (EN/EL) plus an **AI Fabric Condition Rater** wizard.
+A lightweight, no-build static website (EN/EL) with an **AI Fabric Condition Rater** wizard.
 
 Live:
 - Website: https://mirandas.gr
 - AI Fabric Condition Rater: https://mirandas.gr/condition
 
-![alt text](static/assets/images/demo-condition.png)
+![alt text](static/assets/images/demo-condition-v2.png)
 
 - Frontend: vanilla **HTML/CSS/JS**
 - Backend: **Cloudflare Worker** (`worker.js`) exposing `POST /api/evaluate`
