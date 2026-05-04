@@ -1,67 +1,212 @@
 # Mirandas ⁓ AI Fabric Condition Rater
 
-A lightweight, no-build static website (EN/EL) with an **AI Fabric Condition Rater** wizard.
+A lightweight, no-build static website for Mirandas, available in English and Greek, with an AI-powered Fabric Condition Rater wizard.
 
 Live:
+
 - Website: https://mirandas.gr
 - AI Fabric Condition Rater: https://mirandas.gr/condition
 
-![alt text](static/assets/images/demo-condition-v2.png)
+![Mirandas condition rater demo](static/assets/images/demo-condition-v2.png)
 
-- Frontend: vanilla **HTML/CSS/JS**
-- Backend: **Cloudflare Worker** (`worker.js`) exposing `POST /api/evaluate`
-- AI: OpenAI vision model (key via `AI_API_KEY` (OpenAI API key))
+## What it does
 
-In static/condition.js, have API_BASE default to "" (same origin), but allow override via query param or a small config file (e.g. static/config.js ignored by git).
+The condition rater asks the user for three fabric photos:
 
-Request: POST /api/evaluate accepts multipart/form-data with fields full, texture, problem (or whatever you use)
+1. Full item photo
+2. Texture close-up
+3. Problem area photo
 
-Response: { score: 1-5, confidence: 0-1, issues: [...], advice: [...] }
+It then returns a fabric condition result with:
+
+- score from 1 to 5
+- confidence
+- detected issues
+- whether repair may be needed
+- care or next-step advice
+
+Supported item types:
+
+- clothing
+- curtain
+- other fabric
+
+Non-fabric items are refused or returned without a score.
+
+## Tech stack
+
+- Frontend: vanilla HTML, CSS, and JavaScript
+- Backend: Cloudflare Worker
+- AI: OpenAI vision model
+- Bot protection: Cloudflare Turnstile
+- Optional storage/rate limiting: Cloudflare KV / R2 depending on deployment
 
 ## Project structure
-- `static/` — website + wizard (open directly or serve)
-- `worker.js` — Cloudflare Worker backend for `/api/evaluate`
 
-## Run locally (frontend only)
-Serve the `static/` folder with any simple server (recommended so file uploads work cleanly):
+```txt
+static/                  Static website and condition rater UI
+static/index.html        Main website
+static/condition.html    Fabric condition rater page
+static/condition.js      Condition rater wizard logic
+worker.js                Cloudflare Worker API
+wrangler.toml.example    Example Worker configuration
+README.md                Project documentation
+```
+
+## API
+
+### `POST /api/evaluate`
+
+Evaluates the condition of a fabric item.
+
+Request type:
+
+```txt
+multipart/form-data
+```
+
+Expected fields:
+
+```txt
+photo1                  Full item photo
+photo2                  Texture close-up
+photo3                  Problem area photo
+itemType                clothing | curtain | other fabric
+lang                    Optional: el | en
+cf-turnstile-response   Cloudflare Turnstile token
+```
+
+Example response:
+
+```json
+{
+  "score": 4,
+  "stage": 4,
+  "label": "Ready to wear",
+  "confidence": 0.68,
+  "confidence_label": "medium",
+  "issues": ["Minor fading"],
+  "issues_detected": ["Minor fading"],
+  "repair_needed": false,
+  "advice": "Light wash and you are set.",
+  "notes": "Light wash and you are set."
+}
+```
+
+### `POST /api/contact`
+
+Handles contact form submissions.
+
+Depending on the Worker environment, contact submissions may use:
+
+- `CONTACT_KV`
+- `CONTACT_UPLOADS`
+- `ADMIN_TOKEN`
+
+## Run locally: frontend only
+
+To preview the static website without the AI Worker, serve the `static/` folder with any simple static file server.
+
+Using Node:
+
+```bash
+npx serve static
+```
+
+Then open the local URL shown in the terminal, usually:
+
+```txt
+http://localhost:3000
+```
+
+Or using Python:
 
 ```bash
 cd static
 python3 -m http.server 8080
 ```
 
-Open **locally**:
-- `http://localhost:8080/index.html`
-- `http://localhost:8080/condition.html`
+Then open:
 
-If no backend is available, the wizard shows an error.
+```txt
+http://localhost:8080
+```
 
-## Deploy the Worker (Cloudflare)
-1. Create a Worker and paste `worker.js`.
-2. Set `AI_API_KEY` as a Worker environment variable/secret.
-3. Set `TURNSTILE_SECRET` as a Worker environment variable/secret (used by `/api/contact` and `/api/evaluate`).
-4. Configure rate limiting for `/api/evaluate`:
-   - KV binding: `EVALUATE_RATE_LIMIT_KV` (recommended) or reuse `CONTACT_KV`.
-   - Vars: `EVALUATE_RATE_LIMIT_MAX` (default 20), `EVALUATE_RATE_LIMIT_WINDOW_SEC` (default 60).
-5. Route `*/api/evaluate` to the Worker so the static wizard can call it.
+This only serves the frontend. The AI condition rater needs the Cloudflare Worker API to be running or deployed separately.
 
-Front-end Turnstile widgets use the site key set in:
-- `static/index.html` (contact form)
-- `static/condition.html` (condition rater)
+## Run locally: frontend + Worker
 
-## Privacy & safety
-- The wizard compresses images in-browser before upload.
-- The Worker processes images in-memory and does not persist them.
-- No API keys are included in this repository.
+Install Wrangler if needed:
 
-**Do not upload sensitive personal info.**
+```bash
+npm install -g wrangler
+```
 
+Run the Worker locally:
 
-## Run locally (frontend + worker)
+```bash
+wrangler dev worker.js
+```
 
-# frontend
+In another terminal, serve the frontend with Node:
+
+```bash
+npx serve static
+```
+
+Or with Python:
+
+```bash
 cd static
 python3 -m http.server 8080
+```
 
-# worker (example)
-# wrangler dev
+For local integration, either proxy `/api/evaluate` to the Worker or deploy the Worker and test against the live route.
+
+## Deploy on Cloudflare
+
+1. Create a Cloudflare Worker.
+2. Deploy `worker.js`.
+3. Add the required secrets and bindings.
+4. Route the API paths to the Worker.
+
+Required secrets:
+
+```txt
+AI_API_KEY
+TURNSTILE_SECRET
+```
+
+Recommended bindings / vars:
+
+```txt
+CONTACT_KV
+CONTACT_UPLOADS
+ADMIN_TOKEN
+EVALUATE_RATE_LIMIT_KV
+EVALUATE_RATE_LIMIT_MAX
+EVALUATE_RATE_LIMIT_WINDOW_SEC
+```
+
+The Worker handles:
+
+```txt
+/api/evaluate
+/api/contact
+/api/contact/list
+/api/contact/get
+/api/contact/file
+```
+
+## Privacy & safety
+
+- Images are compressed in the browser before upload.
+- Evaluation images are processed for scoring and are not persisted by the Worker.
+- Contact form uploads may be stored only if the relevant Cloudflare storage binding is configured.
+- Super important: API keys and secrets must never be committed to the repository.
+
+Do not upload sensitive personal information.
+
+## Notes
+
+This project is intentionally simple and fun: no build step, no framework, and no client-side dependency chain.
