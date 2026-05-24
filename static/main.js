@@ -89,7 +89,7 @@ const specTranslations = {
     labelName: "Name",
     labelEmail: "Email",
     labelDetails: "What do you need?",
-    detailsPlaceholder: "Hem, repair, bridal fitting...",
+    detailsPlaceholder: "Hem, repair, bridal fitting... an idea maybe?",
     labelPhotos: "Upload reference photos",
     formSubmit: "Send request",
     formNote: "Send your request and we'll get back to you soon.",
@@ -155,7 +155,7 @@ const specTranslations = {
       }
     ],
     contactHeading: "Επικοινωνία",
-    contactPhone: "<strong>II�I�.:<\/strong>",
+    contactPhone: "<strong>II�I�.:<\/strong>",
     contactEmail: "<strong>Email:</strong>",
     contactPhoneLabel: "Phone:",
     contactEmailLabel: "Email:",
@@ -565,7 +565,9 @@ function applyTranslations(lang) {
   setText("footer-contact", t.footerContact);
 
   // Refresh gallery labels/text per language
-  setGalleryActive(thumbButtons.findIndex((b) => b.classList.contains("active")) || 0);
+  if (beforeImg || afterImg || titleEl || noteEl || thumbButtons.length) {
+    setGalleryActive(thumbButtons.findIndex((b) => b.classList.contains("active")) || 0);
+  }
 
   // Reset file note text to match new language
   if (fileNoteEl && fileNoteEl.textContent) {
@@ -680,9 +682,11 @@ document.addEventListener("DOMContentLoaded", () => {
     initMobileMenu();
     return;
   }
-  initGallery();
-  initContactForm();
-  initContactReveal();
+  if (pageType === "home") {
+    initGallery();
+    initContactForm();
+    initContactReveal();
+  }
   setYear();
   setLanguage(detectPreferredLanguage());
   initLangToggle();

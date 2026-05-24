@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="el">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Garment Stories - Miranda</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@400;600;700&family=Open+Sans:wght@400;600;700&family=Caveat:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="/assets/stickers/bow.ico" type="image/x-icon" />
+  </head>
+  <body data-page="stories">
+    <header class="nav">
+      <div class="container nav-row">
+        <a class="brand" href="index.html#hero">
+          <picture>
+            <img
+              class="brand-logo"
+              src="assets/logo/thereallogo.svg"
+              alt="Miranda's"
+            />
+          </picture>
+        </a>
+        <button
+          class="menu-toggle"
+          type="button"
+          id="menu-toggle"
+          aria-label="Open menu"
+          aria-controls="mobile-menu"
+          aria-expanded="false"
+        >
+          <span class="menu-icon" aria-hidden="true"></span>
+        </button>
+        <nav class="links" aria-label="Primary">
+          <a id="nav-home" href="index.html#hero">Home</a>
+          <a id="nav-about" href="index.html#about">About</a>
+          <a id="nav-work" href="index.html#work">Work</a>
+          <a id="nav-contact" href="index.html#contact">Contact</a>
+          <a href="garment-stories.html" id="nav-stories" aria-current="page">
+            <span class="lang-inline" data-lang="en">Garment Stories</span>
+            <span class="lang-inline" data-lang="el">Μικρό περιοδικό</span>
+          </a>
+          <a href="condition.html" id="nav-condition">Condition Rater</a>
+        </nav>
+        <button
+          class="lang-toggle"
+          type="button"
+          id="lang-toggle"
+          aria-label="Switch language"
+        >
+          GR
+        </button>
+      </div>
+    </header>
+
+    <div class="menu-overlay" id="menu-overlay" hidden></div>
+    <div
+      class="mobile-menu"
+      id="mobile-menu"
+      hidden
+      role="dialog"
+      aria-modal="true"
+      aria-label="Menu"
+    >
+      <nav aria-label="Mobile Primary">
+        <a id="mobile-nav-home" href="index.html#hero">Home</a>
+        <a id="mobile-nav-about" href="index.html#about">About</a>
+        <a id="mobile-nav-work" href="index.html#work">Work</a>
+        <a id="mobile-nav-contact" href="index.html#contact">Contact</a>
+        <a
+          href="garment-stories.html"
+          id="mobile-nav-stories"
+          aria-current="page"
+        >
+          <span class="lang-inline" data-lang="en">Garment Stories</span>
+          <span class="lang-inline" data-lang="el">Μικρό περιοδικό</span>
+        </a>
+        <a href="condition.html" id="mobile-nav-condition">Condition Rater</a>
+        <button
+          class="lang-toggle mobile-lang-toggle"
+          type="button"
+          id="mobile-lang-toggle"
+          aria-label="Switch language"
+        >
+          GR
+        </button>
+      </nav>
+    </div>
+
+    <main>
+      <section class="hero stories-hero">
+        <div class="container">
+          <div class="lang-block" data-lang="en">
+            <p class="hand tag">Journal</p>
+            <h1 class="display scribble-underline">Garment Stories</h1>
+          </div>
+
+          <div class="lang-block" data-lang="el">
+            <p class="hand tag">Garment Stories</p>
+            <h1 class="display scribble-underline">Μικρό περιοδικό</h1>
+          </div>
+        </div>
+      </section>
+
+      <section class="section alt stories-index-list" id="stories">
+        <div class="container">
+          <div class="stories-index-intro">
+            <div class="lang-block" data-lang="en">
+              <p class="muted">
+                A small archive for clothes, fashion commentary, repair ideas,
+                interesting readings, and news from the studio.
+              </p>
+            </div>
+            <div class="lang-block" data-lang="el">
+              <p class="muted">
+                Ένα μικρό σημειωματάριο με ιστορίες για ρούχα, αποκόμματα μόδας,
+                ιδέες επιδιόρθωσης, και νέα από το εργαστήριο.
+              </p>
+            </div>
+          </div>
+
+          <div class="story-grid">
+            <article class="card story-card">
+              <div class="story-meta">
+                <span class="story-tag">AI &amp; Wearability</span>
+                <span class="story-date">01</span>
+              </div>
+
+              <div class="lang-block" data-lang="en">
+                <h2 class="h3 story-card-title">
+                  Old Clothes, Artificial Intelligence, and the future of
+                  circular fashion
+                </h2>
+                <p class="story-excerpt">
+                  A reflection on old clothes, AI sorting, and why repair still
+                  needs human eyes, hands, and even a sense of smell.
+                </p>
+                <div class="story-actions">
+                  <a
+                    class="story-readmore"
+                    href="garment-stories-ai-old-clothes.html"
+                    >Read more</a
+                  >
+                </div>
+              </div>
+
+              <div class="lang-block" data-lang="el">
+                <h2 class="h3 story-card-title">
+                  Παλιά ρούχα και Τεχνητή Νοημοσύνη, το μέλλον της κυκλικής
+                  μόδας
+                </h2>
+                <p class="story-excerpt">
+                  Μια σκέψη για τα παλιά ρούχα, τη διαλογή με τεχνητή νοημοσύνη
+                  και γιατί η επιδιόρθωση χρειάζεται ακόμη ανθρώπινο μάτι,
+                  χέρια. Και ικανότητα όσφρησης.
+                </p>
+                <div class="story-actions">
+                  <a
+                    class="story-readmore"
+                    href="garment-stories-ai-old-clothes.html"
+                    >Διάβασε περισσότερα</a
+                  >
+                </div>
+              </div>
+            </article>
+            <!-- add more stories in the future... -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-row">
+        <small id="footer-note"
+          >&copy; <span id="year"></span> Miranda - Creative repairs &amp;
+          alterations</small
+        >
+        <nav class="footer-links" aria-label="Footer">
+          <a href="index.html#about" id="footer-about">About</a>
+          <a href="index.html#contact" id="footer-contact">Contact</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="main.js" defer></script>
+  </body>
+</html>
