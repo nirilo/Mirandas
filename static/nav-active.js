@@ -54,7 +54,7 @@
       return;
     }
 
-    const activationPoint = scrollY + offset + 80;
+    const activationPoint = scrollY + offset + 170;
 
     let activeId = sections[0].id;
 
