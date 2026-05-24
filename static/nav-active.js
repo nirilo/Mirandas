@@ -11,7 +11,7 @@
   if (!sections.length) return;
 
   const navLinks = Array.from(
-    document.querySelectorAll(".links a, #mobile-menu a")
+    document.querySelectorAll(".links a, #mobile-menu a"),
   ).filter((link) => {
     const hash = new URL(link.href, window.location.href).hash;
     return sectionIds.includes(hash.replace("#", ""));
@@ -42,12 +42,24 @@
 
   const computeActive = () => {
     const offset = getNavOffset();
-    const scrollPosition = window.scrollY + offset + 24;
+
+    const scrollY = window.scrollY || window.pageYOffset;
+    const viewportHeight = window.innerHeight;
+    const pageHeight = document.documentElement.scrollHeight;
+
+    const isNearBottom = scrollY + viewportHeight >= pageHeight - 8;
+
+    if (isNearBottom) {
+      setCurrentHash(`#${sections[sections.length - 1].id}`);
+      return;
+    }
+
+    const activationPoint = scrollY + offset + 80;
 
     let activeId = sections[0].id;
 
     for (const section of sections) {
-      if (section.offsetTop <= scrollPosition) {
+      if (section.offsetTop <= activationPoint) {
         activeId = section.id;
       }
     }
