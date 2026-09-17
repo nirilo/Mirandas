@@ -3,7 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Fabric Condition Rater — Miranda</title>
+  <title>Αξιολόγηση Υφάσματος από Φωτογραφίες | Miranda’s</title>
+  <meta name="description" content="Ανεβάστε τρεις φωτογραφίες για μια ενδεικτική αξιολόγηση της κατάστασης του υφάσματος με AI. Δείτε παρατηρήσεις και ζητήστε προσωπική εκτίμηση από τη Miranda.">
+  <link rel="canonical" href="https://mirandas.gr/condition">
+  <meta property="og:title" content="Αξιολόγηση Υφάσματος από Φωτογραφίες | Miranda’s">
+  <meta property="og:description" content="Ανεβάστε τρεις φωτογραφίες για μια ενδεικτική αξιολόγηση της κατάστασης του υφάσματος με AI. Δείτε παρατηρήσεις και ζητήστε προσωπική εκτίμηση από τη Miranda.">
+  <meta property="og:url" content="https://mirandas.gr/condition">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="el_GR">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:image" content="https://mirandas.gr/assets/images/demo-condition-v2.png">
+  <meta property="og:image:alt" content="Miranda’s — φροντίδα ρούχων και υφασμάτων">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@400;600;700&family=Open+Sans:wght@400;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
@@ -12,67 +22,64 @@
   <link rel="icon" href="/assets/stickers/bow.ico" type="image/x-icon">
 </head>
 <body data-page="condition">
+  <a class="skip-link" href="#main-content">Μετάβαση στο περιεχόμενο / Skip to content</a>
   <header class="nav">
     <div class="container nav-row">
-      <a class="brand" href="index.html#hero">
+      <a class="brand" href="/#hero">
         <picture>
           <!-- <source media="(max-width: 767.98px)" srcset="assets/logo/mobile_logo.svg"> -->
           <img class="brand-logo" src="assets/logo/thereallogo.svg" alt="Miranda's">
         </picture>
       </a>
-      <button class="menu-toggle" type="button" id="menu-toggle" aria-label="Open menu" aria-controls="mobile-menu" aria-expanded="false">
+      <button class="menu-toggle" type="button" id="menu-toggle" aria-label="Άνοιγμα μενού" aria-controls="mobile-menu" aria-expanded="false">
           <span class="menu-icon" aria-hidden="true"></span>
       </button>
       <nav class="links" aria-label="Primary">
-        <a id="nav-home" href="index.html#hero">Home</a>
-        <a id="nav-about" href="index.html#about">About</a>
-        <a id="nav-work" href="index.html#work">Work</a>
-        <a id="nav-contact" href="index.html#contact">Contact</a>
-        <a id="nav-stories" href="garment-stories.html">
-          <span class="lang-inline" data-lang="en">Garment Stories</span>
-          <span class="lang-inline" data-lang="el">Μικρό περιοδικό</span>
+        <a id="nav-home" href="/#hero">Αρχική</a>
+        <a id="nav-about" href="/#about">Σχετικά</a>
+        <a id="nav-work" href="/#work">Δουλειές</a>
+        <a id="nav-contact" href="/#contact">Επικοινωνία</a>
+        <a id="nav-stories" href="/garment-stories">
+          <span class="lang-inline" data-lang="en" lang="en">Garment Stories</span>
+          <span class="lang-inline" data-lang="el" lang="el">Μικρό περιοδικό</span>
         </a>
-        <a id="nav-condition" href="condition.html" aria-current="page">Condition Rater</a>
+        <a id="nav-condition" href="/condition" aria-current="page">Αξιολόγηση υφάσματος</a>
       </nav>
-      <button class="lang-toggle" type="button" id="lang-toggle" aria-label="Switch language">GR</button>
+      <button class="lang-toggle" type="button" id="lang-toggle" aria-label="Switch to English / Αλλαγή σε ελληνικά">EN</button>
     </div>
   </header>
   <div class="menu-overlay" id="menu-overlay" hidden></div>
   <div class="mobile-menu" id="mobile-menu" hidden role="dialog" aria-modal="true" aria-label="Menu">
     <nav aria-label="Mobile Primary">
-      <a id="mobile-nav-home" href="index.html#hero">Home</a>
-      <a id="mobile-nav-about" href="index.html#about">About</a>
-      <a id="mobile-nav-work" href="index.html#work">Work</a>
-      <a id="mobile-nav-contact" href="index.html#contact">Contact</a>
-      <a id="mobile-nav-stories" href="garment-stories.html">
-        <span class="lang-inline" data-lang="en">Garment Stories</span>
-        <span class="lang-inline" data-lang="el">Μικρό περιοδικό</span>
+      <a id="mobile-nav-home" href="/#hero">Αρχική</a>
+      <a id="mobile-nav-about" href="/#about">Σχετικά</a>
+      <a id="mobile-nav-work" href="/#work">Δουλειές</a>
+      <a id="mobile-nav-contact" href="/#contact">Επικοινωνία</a>
+      <a id="mobile-nav-stories" href="/garment-stories">
+        <span class="lang-inline" data-lang="en" lang="en">Garment Stories</span>
+        <span class="lang-inline" data-lang="el" lang="el">Μικρό περιοδικό</span>
       </a>
-      <a id="mobile-nav-condition" href="condition.html" aria-current="page">Condition Rater</a>
-      <button class="lang-toggle mobile-lang-toggle" type="button" id="mobile-lang-toggle" aria-label="Switch language">GR</button>
+      <a id="mobile-nav-condition" href="/condition" aria-current="page">Αξιολόγηση υφάσματος</a>
+      <button class="lang-toggle mobile-lang-toggle" type="button" id="mobile-lang-toggle" aria-label="Switch to English / Αλλαγή σε ελληνικά">EN</button>
     </nav>
   </div>
 
-  <main>
+  <main id="main-content" tabindex="-1">
     <section class="hero hero-compact">
       <div class="container hero-inner">
         <div class="hero-copy">
-          <p class="hand tag" id="hero-tag">AI Fabric Condition Rater</p>
-          <h1 class="display scribble-underline" id="hero-title">Check fabric health in 3 snaps</h1>
-          <p class="lead" id="hero-lead">Upload a full item photo, a texture close-up, and any problem areas. We’ll score 1–5, note issues, and share quick advice.</p>
+          <p class="hand tag" id="hero-tag">ΑΙ Εκτίμηση κατάστασης υφάσματος</p>
+          <h1 class="display scribble-underline" id="hero-title">Έλεγχος υφάσματος σε 3 λήψεις</h1>
+          <p class="lead" id="hero-lead">Μεταφορτώστε μια φωτογραφία ολόκληρου του αντικειμένου, ένα κοντινό στην υφή και τυχόν προβληματικά σημεία. Θα βαθμολογήσουμε 1-5, θα σημειώσουμε θέματα και θα μοιραστούμε σύντομες συμβουλές.</p>
           <div class="hero-actions">
-            <a class="btn btn-stitch" id="hero-btn-primary" href="#wizard">Start rating</a>
-            <a class="btn btn-secondary" id="hero-btn-secondary" href="index.html#contact">Need human help?</a>
+            <a class="btn btn-stitch" id="hero-btn-primary" href="#wizard">Ξεκινήστε την αξιολόγηση</a>
+            <a class="btn btn-secondary" id="hero-btn-secondary" href="/#contact">Χρειάζεστε βοήθεια;</a>
           </div>
         </div>
         <div class="paper torn hero-note" aria-label="How it works">
-          <h3 class="h3" id="hero-note-title">What you need</h3>
-          <ul id="hero-list">
-            <li>Good lighting, no flash</li>
-            <li>Hold steady; fill the frame</li>
-            <li>Focus on cuffs, collars, hems for issues</li>
-          </ul>
-          <p class="micro muted" id="hero-note-foot">Your photos stay in-memory for scoring and are discarded right after.</p>
+          <h2 class="h3" id="hero-note-title">Τι θα χρειαστείτε</h2>
+          <ul id="hero-list"><li>Καλή φωτεινότητα, χωρίς φλας</li><li>Κρατήστε σταθερά, γεμίστε το κάδρο</li><li>Εστιάστε σε μανσέτες, γιακάδες, στριφώματα</li></ul>
+          <p class="micro muted" id="hero-note-foot">Οι φωτογραφίες αποστέλλονται σε υπηρεσία AI για αξιολόγηση. Ο διακομιστής του site δεν αποθηκεύει τις φωτογραφίες αξιολόγησης.</p>
         </div>
       </div>
     </section>
@@ -80,8 +87,8 @@
     <section class="section" id="wizard">
       <div class="container">
         <header class="section-head">
-          <h2 class="h2 scribble-underline" id="wizard-title">3-step capture</h2>
-          <p class="muted hand" id="wizard-subtitle">Full item → texture → problem spots</p>
+          <h2 class="h2 scribble-underline" id="wizard-title">Λήψη σε 3 βήματα</h2>
+          <p class="muted hand" id="wizard-subtitle">Ολόκληρο ρούχο + υφή + προβληματικά σημεία</p>
         </header>
 
         <div class="card wizard">
@@ -89,15 +96,16 @@
             <div class="progress-bar" id="progress-bar" style="width: 33%;"></div>
           </div>
 
+          <noscript><p>Η αξιολόγηση χρειάζεται JavaScript. Μπορείτε να <a href="/#contact">επικοινωνήσετε με τη Miranda</a> για το ρούχο σας.</p></noscript>
           <div class="wizard-steps" id="steps">
           </div>
 
           <div class="wizard-actions">
             <div class="turnstile-wrap" id="turnstile-wrap" hidden>
-              <div class="cf-turnstile" data-sitekey="0x4AAAAAACKs1aHL3A4iHDDR"></div>
+              <div class="cf-turnstile" data-sitekey="0x4AAAAAACKs1aHL3A4iHDDR" data-size="compact"></div>
             </div>
-            <button class="btn btn-secondary" id="back-btn" type="button">Back</button>
-            <button class="btn btn-stitch" id="next-btn" type="button">Next</button>
+            <button class="btn btn-secondary" id="back-btn" type="button">Πίσω</button>
+            <button class="btn btn-stitch" id="next-btn" type="button">Επόμενο</button>
           </div>
         </div>
       </div>
@@ -106,34 +114,41 @@
     <section class="section alt" id="results">
       <div class="container">
         <header class="section-head">
-          <h2 class="h2 scribble-underline" id="results-title">Result</h2>
-          <p class="muted hand" id="results-subtitle">Score, noticed issues, and quick care advice</p>
+          <h2 class="h2 scribble-underline" id="results-title">Αποτέλεσμα</h2>
+          <p class="muted hand" id="results-subtitle">Βαθμός, παρατηρήσεις και συμβουλές φροντίδας</p>
         </header>
         <div class="card result-card" id="result-card" hidden>
           <div class="result-row">
             <div>
-              <p class="micro muted" id="label-stage">Overall fabric health (1-5)</p>
+              <p class="micro muted" id="label-stage">Γενική κατάσταση υφάσματος (1-5)</p>
               <div class="result-stage"><span id="result-stage">-</span> <span class="badge" id="result-label">Rated</span></div>
             </div>
             <div>
-              <p class="micro muted" id="label-confidence">Confidence</p>
+              <p class="micro muted" id="label-confidence">Βεβαιότητα</p>
               <div id="result-confidence">-</div>
             </div>
             <div>
-              <p class="micro muted" id="label-repair">Repair needed?</p>
+              <p class="micro muted" id="label-repair">Χρειάζεται επισκευή;</p>
               <div id="result-repair">-</div>
             </div>
           </div>
           <div class="result-issues">
-            <p class="micro muted" id="label-issues">What we noticed</p>
+            <p class="micro muted" id="label-issues">Τι εντοπίσαμε</p>
             <ul id="result-issues-list"></ul>
           </div>
           <div class="result-advice">
-            <p class="micro muted" id="label-advice">Quick care advice</p>
+            <p class="micro muted" id="label-advice">Συμβουλές φροντίδας</p>
             <p id="result-notes" class="muted"></p>
           </div>
+          <div id="result-enquiry" class="service-contact" hidden>
+            <p id="result-enquiry-note"></p>
+            <a class="btn btn-stitch" id="result-contact" href="/?enquiry=condition#contact">Στείλτε το αποτέλεσμα στη Miranda για εκτίμηση</a>
+            <label for="condition-summary" id="condition-summary-label">Σύνοψη για το αίτημά σας</label>
+            <textarea id="condition-summary" rows="6" readonly></textarea>
+            <p id="enquiry-storage-fallback" role="status" hidden><span class="lang-inline" data-lang="el" lang="el">Δεν έγινε αυτόματη μεταφορά. Αντιγράψτε τη σύνοψη και <a href="/#contact">επικολλήστε τη στη φόρμα επικοινωνίας</a>.</span><span class="lang-inline" data-lang="en" lang="en">Automatic transfer is unavailable. Copy the summary and <a href="/#contact">paste it into the contact form</a>.</span></p>
+          </div>
           <div id="result-tips" class="tip" hidden>
-            <strong id="tips-title">Low confidence tips</strong>
+            <strong id="tips-title">Οδηγίες για χαμηλή βεβαιότητα</strong>
             <ul>
               <li id="tips-1">Retake in brighter, even lighting</li>
               <li id="tips-2">Keep the item centered and fill most of the frame</li>
@@ -144,21 +159,22 @@
       </div>
     </section>
 
+    <div class="container"><p><span class="lang-inline" data-lang="el" lang="el">Δείτε επίσης τις <a href="/epidiorthosi-tzin">επιδιορθώσεις τζιν</a> και τις <a href="/metapoiiseis-rouxon">μεταποιήσεις ρούχων</a> στο εργαστήρι.</span><span class="lang-inline" data-lang="en" lang="en">Explore <a href="/epidiorthosi-tzin">jeans repairs</a> and <a href="/metapoiiseis-rouxon">clothing alterations</a> in our Greek service guides.</span></p></div>
     <section class="section" id="faq">
       <div class="container card">
-        <h3 class="h3" id="faq-title">FAQ</h3>
-        <p><strong id="faq-q1">Are photos stored?</strong> <span id="faq-a1">No. They’re compressed in your browser, sent for scoring, then discarded.</span></p>
-        <p><strong id="faq-q2">Supported items?</strong> <span id="faq-a2">Clothing, curtains, and other fabrics. Shoes/electronics/jewelry are refused.</span></p>
+        <h2 class="h3" id="faq-title">Συχνές ερωτήσεις</h2>
+        <p><strong id="faq-q1">Αποθηκεύονται οι φωτογραφίες;</strong> <span id="faq-a1">Οι προεπισκοπήσεις παραμένουν στη σελίδα όσο είναι ανοιχτή. Οι συμπιεσμένες φωτογραφίες αποστέλλονται σε υπηρεσία AI. Ο διακομιστής του site δεν αποθηκεύει τις φωτογραφίες αξιολόγησης.</span></p>
+        <p><strong id="faq-q2">Τι είδη υποστηρίζονται;</strong> <span id="faq-a2">Ρούχα, κουρτίνες και άλλα υφάσματα. Παπούτσια/ηλεκτρονικά/κοσμήματα απορρίπτονται.</span></p>
       </div>
     </section>
   </main>
 
   <footer class="footer">
     <div class="container footer-row">
-      <small id="footer-note">© <span id="year"></span> Miranda — Creative repairs & alterations</small>
+      <small id="footer-note">&copy; <span id="year"></span> Miranda's - Δημιουργικές επιδιορθώσεις & μεταποιήσεις</small>
       <nav class="footer-links" aria-label="Footer">
-        <a href="index.html#about" id="footer-about">About</a>
-        <a href="index.html#contact" id="footer-contact">Contact</a>
+        <a href="/#about" id="footer-about">Σχετικά</a>
+        <a href="/#contact" id="footer-contact">Επικοινωνία</a>
       </nav>
     </div>
   </footer>

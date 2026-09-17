@@ -1,3 +1,16 @@
-name = "miranda-condition-rater"
+name = "mirandas"
 main = "worker.js"
 compatibility_date = "2026-01-04"
+
+# API Worker only. Pages project miranda-52w publishes static/ separately.
+# Keep existing dashboard routes: mirandas.gr/api/* and www.mirandas.gr/api/*.
+# Never overwrite an existing production wrangler.toml with this template.
+# For a new checkout only, supply the existing production bindings below.
+# CONTACT_KV is required for contact messages; CONTACT_UPLOADS is required for photos.
+# [[kv_namespaces]]
+# binding = "CONTACT_KV"
+# id = "<existing namespace ID>"
+# [[r2_buckets]]
+# binding = "CONTACT_UPLOADS"
+# bucket_name = "<existing bucket name>"
+# Set AI_API_KEY, TURNSTILE_SECRET and ADMIN_TOKEN as Worker secrets, not here.

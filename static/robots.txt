@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /api/
+Allow: /
+
+Sitemap: https://mirandas.gr/sitemap.xml

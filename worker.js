@@ -2,13 +2,7 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    if (url.hostname === "mirandas.gr") {
-      return Response.redirect(
-        `https://www.mirandas.gr${url.pathname}${url.search}`,
-        308
-      );
-    }
-
+    // Cloudflare Pages serves the website. This Worker is routed only to /api/*.
     if (url.pathname === "/api/evaluate") {
       return handleEvaluate(request, env);
     }
@@ -477,14 +471,23 @@ async function handleContact(request, env) {
       return new Response(JSON.stringify({ ok: false, error: "Invalid email" }), { status: 400, headers: corsHeaders(request) });
     }
 
-    // Photos: allow multiple files under the field name "photos"
-    const photos = form.getAll("photos").filter((p) => isImageFile(p));
+    // Ignore the browser's empty optional file field, but never silently drop uploads.
+    const photos = form.getAll("photos").filter((p) => p !== "" && !(p && typeof p === "object" && p.size === 0 && !p.name));
     const MAX_FILES = 5;
     const MAX_FILE = 4 * 1024 * 1024;
-    const limitedPhotos = photos.slice(0, MAX_FILES);
+    if (photos.length > MAX_FILES || photos.some((p) => !isImageFile(p) || !p.size)) {
+      return jsonError(request, 400, { ok: false, error: "Upload up to five non-empty images." });
+    }
+    const limitedPhotos = photos;
     const totalBytes = limitedPhotos.reduce((sum, file) => sum + (file.size || 0), 0);
     if (limitedPhotos.some((p) => (p.size || 0) > MAX_FILE) || totalBytes > MAX_BYTES) {
       return new Response(JSON.stringify({ ok: false, error: "Photos too large" }), { status: 413, headers: corsHeaders(request) });
+    }
+
+    // A successful enquiry must be retrievable, including every accepted photo.
+    if (!env.CONTACT_KV || typeof env.CONTACT_KV.put !== "function" ||
+        (photos.length && (!env.CONTACT_UPLOADS || typeof env.CONTACT_UPLOADS.put !== "function"))) {
+      return jsonError(request, 503, { ok: false, error: "Contact storage is unavailable. Please try again later." });
     }
 
     const submissionId = crypto.randomUUID();
@@ -525,17 +528,13 @@ async function handleContact(request, env) {
       photos: uploaded,
     };
 
-  if (env.CONTACT_KV && typeof env.CONTACT_KV.put === "function") {
-    await env.CONTACT_KV.put(
+  await env.CONTACT_KV.put(
       `contact:${submissionId}`,
       JSON.stringify(record),
       {
         expirationTtl: 60 * 60 * 24 * 90,
       }
-    );
-  } else {
-    console.log("Contact submission", record);
-  }
+  );
 
   return new Response(JSON.stringify({ ok: true, id: submissionId }), { status: 200, headers: corsHeaders(request) });
 }
@@ -702,4 +701,3 @@ function rateLimitResponse(request, rl) {
     }
   );
 }
-

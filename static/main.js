@@ -45,7 +45,7 @@ const specTranslations = {
     },
     heroTag: "Made-to-measure care",
     heroLead:
-      'Careful, high-quality <strong>repairs & alterations</strong> from denim to bridal wear and home textiles.',
+      '<strong>Clothing repairs & alterations in Sepolia, Athens</strong>, from jeans to bridal wear and home textiles.',
     heroBtnPrimary: "Book a fitting",
     heroBtnSecondary: "See work",
     hoursLabel: "Hours",
@@ -77,27 +77,26 @@ const specTranslations = {
       { title: "Home textiles", body: "Curtains resized, cushions refreshed, linens finished with neat seams." }
     ],
     contactHeading: "Contact",
-    contactPhone: "<strong>Phone:</strong>",
     contactEmail: "<strong>Email:</strong>",
     contactPhoneLabel: "Phone:",
     contactEmailLabel: "Email:",
     revealPhone: "Call us",
     revealEmail: "Email us",
-    contactAddress: "<strong>Address:</strong> Avlonos, Athens",
+    contactAddress: "<strong>Address:</strong> 88 Avlonos, Sepolia, Athens, Greece",
     backTop: "Back to top",
     formTitle: "Book a fitting ❤",
     labelName: "Name",
     labelEmail: "Email",
     labelDetails: "What do you need?",
     detailsPlaceholder: "Hem, repair, bridal fitting... an idea maybe?",
-    labelPhotos: "Upload reference photos",
+    labelPhotos: "Reference photos (up to 5; 4 MB each, 10 MB total)",
     formSubmit: "Send request",
     formNote: "Send your request and we'll get back to you soon.",
     formSending: "Sending...",
     formConfirm: "Request sent. We'll reply soon.",
     formError: "Could not send. Please try again.",
     fileSelectedPrefix: "Selected",
-    footerNote: "&copy; <span id=\"year\"></span> Miranda 2026 - Creative repairs & alterations",
+    footerNote: "&copy; <span id=\"year\"></span> Miranda's - Creative repairs & alterations",
     footerAbout: "About",
     footerContact: "Contact"
   },
@@ -113,7 +112,7 @@ const specTranslations = {
     },
     heroTag: "Μοδίστρα",
     heroLead:
-      'Προσεκτικές, υψηλής ποιότητας <strong>επιδιορθώσεις και μεταποιήσεις</strong> από denim μέχρι νυφικά και υφάσματα σπιτιού.',
+      '<strong>Επιδιορθώσεις και μεταποιήσεις ρούχων στα Σεπόλια, Αθήνα.</strong> Φροντίδα για το αγαπημένο σας τζιν, το νυφικό και τα υφάσματα του σπιτιού.',
     heroBtnPrimary: "Κλείστε ραντεβού",
     heroBtnSecondary: "Δείτε δουλειές",
     hoursLabel: "Ωράριο",
@@ -155,27 +154,26 @@ const specTranslations = {
       }
     ],
     contactHeading: "Επικοινωνία",
-    contactPhone: "<strong>II�I�.:<\/strong>",
     contactEmail: "<strong>Email:</strong>",
-    contactPhoneLabel: "Phone:",
+    contactPhoneLabel: "Τηλέφωνο:",
     contactEmailLabel: "Email:",
     revealPhone: "\u039a\u03b1\u03bb\u03ad\u03c3\u03c4\u03b5 \u03bc\u03b1\u03c2",
     revealEmail: "\u03a3\u03c4\u03b5\u03af\u03bb\u03c4\u03b5 email",
-    contactAddress: "<strong>Διεύθυνση:</strong> Αυλώνος, Αθήνα",
+    contactAddress: "<strong>Διεύθυνση:</strong> Αυλώνος 88, Σεπόλια, Αθήνα, Ελλάδα",
     backTop: "Επιστροφή στην αρχή",
     formTitle: "Κλείστε ραντεβού, αμέ! ❤",
     labelName: "Όνομα, Επώνυμο",
     labelEmail: "Email",
     labelDetails: "Τι χρειάζεστε;",
     detailsPlaceholder: "Στρίφωμα, μπάλωμα, πρόβα νυφικού, σακάκια, μια ιδέα...",
-    labelPhotos: "Μεταφόρτωση φωτογραφίας",
+    labelPhotos: "Φωτογραφίες (έως 5, έως 4 MB η καθεμία και 10 MB συνολικά)",
     formSubmit: "Αποστολή",
     formNote: "Στείλτε το αίτημά σας και θα απαντήσουμε σύντομα.",
     formSending: "Αποστολή...",
     formConfirm: "Το αίτημα εστάλη. Θα επικοινωνήσουμε σύντομα.",
     formError: "Δεν στάλθηκε. Προσπαθήστε ξανά.",
     fileSelectedPrefix: "Επιλέχθηκαν",
-    footerNote: "&copy; <span id=\"year\"></span> Miranda 2026 - Δημιουργικές μεταποιήσεις & επιδιορθώσεις",
+    footerNote: "&copy; <span id=\"year\"></span> Miranda's - Δημιουργικές μεταποιήσεις & επιδιορθώσεις",
     footerAbout: "Σχετικά",
     footerContact: "Επικοινωνία"
   }
@@ -190,6 +188,7 @@ let currentLang = "el";
 let thumbButtons = [];
 let beforeImg, afterImg, titleEl, noteEl, beforeLabelEl, afterLabelEl, galleryStage, progressBar;
 let activeIndex = 0;
+let galleryStarted = false;
 let fileNoteEl;
 let fileInputEl;
 
@@ -408,7 +407,21 @@ function initGallery() {
     });
   }
 
-  setGalleryActive(0);
+  const startGallery = () => {
+    galleryStarted = true;
+    setGalleryActive(0);
+  };
+  if (galleryStage && "IntersectionObserver" in window) {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) {
+        observer.disconnect();
+        startGallery();
+      }
+    }, { rootMargin: "200px" });
+    observer.observe(galleryStage);
+  } else {
+    startGallery();
+  }
 }
 
 function initContactForm() {
@@ -418,6 +431,8 @@ function initContactForm() {
   fileInputEl = form.querySelector('input[type="file"]');
   fileNoteEl = document.createElement("div");
   fileNoteEl.className = "micro muted";
+  fileNoteEl.setAttribute("role", "status");
+  fileNoteEl.setAttribute("aria-live", "polite");
   form.insertBefore(fileNoteEl, form.lastElementChild);
 
   fileInputEl.addEventListener("change", () => {
@@ -459,13 +474,13 @@ function initContactForm() {
        }
 
        form.reset();
-       if (window.turnstile) turnstile.reset();
        fileNoteEl.textContent = translations[currentLang].formConfirm;
      } catch (err) {
        fileNoteEl.textContent =
          translations[currentLang].formError ||
          "Could not send. Please try again.";
      } finally {
+       try { window.turnstile?.reset(); } catch (_) {}
        if (submitBtn) submitBtn.disabled = false;
      }
    });
@@ -501,6 +516,9 @@ function applyTranslations(lang) {
   currentLang = lang === "en" ? "en" : "el";
   const t = translations[currentLang];
   document.documentElement.lang = currentLang === "en" ? "en" : "el";
+  setText("hero-heading-detail", currentLang === "en"
+    ? " — Clothing repairs and tailoring in Sepolia, Athens"
+    : " — Επιδιορθώσεις ρούχων και μοδίστρα στα Σεπόλια, Αθήνα");
 
   setText("brand-subtitle", t.brandSubtitle);
   setText("nav-home", t.nav.home);
@@ -518,6 +536,12 @@ function applyTranslations(lang) {
   if (toggleBtn) toggleBtn.textContent = t.nav.toggle;
   const mobileToggleBtn = document.getElementById("mobile-lang-toggle");
   if (mobileToggleBtn) mobileToggleBtn.textContent = t.nav.toggle;
+  [toggleBtn, mobileToggleBtn].forEach((button) => button?.setAttribute("aria-label",
+    currentLang === "en" ? "Switch to Greek" : "Αλλαγή σε αγγλικά"));
+  document.getElementById("menu-toggle")?.setAttribute("aria-label",
+    currentLang === "en" ? "Open menu" : "Άνοιγμα μενού");
+  document.querySelector(".form")?.setAttribute("aria-label",
+    currentLang === "en" ? "Contact form" : "Φόρμα επικοινωνίας");
 
   setText("hero-tag", t.heroTag);
   setText("hero-lead", t.heroLead, true);
@@ -565,7 +589,7 @@ function applyTranslations(lang) {
   setText("footer-contact", t.footerContact);
 
   // Refresh gallery labels/text per language
-  if (beforeImg || afterImg || titleEl || noteEl || thumbButtons.length) {
+  if (galleryStarted) {
     setGalleryActive(thumbButtons.findIndex((b) => b.classList.contains("active")) || 0);
   }
 
@@ -595,6 +619,25 @@ function setLanguage(lang) {
   } catch (_) {}
   document.documentElement.lang = currentLang;
   applyTranslations(currentLang);
+  setYear();
+}
+
+function initConditionEnquiry() {
+  // An explicit CTA carries a draft in this tab only; never auto-submit it.
+  if (new URLSearchParams(window.location.search).get("enquiry") !== "condition") return;
+  const field = document.querySelector("textarea[name='details']");
+  try {
+    const draft = JSON.parse(sessionStorage.getItem("miranda-condition-enquiry") || "null");
+    if (field && !field.value && draft && typeof draft.summary === "string" &&
+        Number.isFinite(draft.createdAt) && Date.now() - draft.createdAt >= 0 &&
+        Date.now() - draft.createdAt < 30 * 60 * 1000) {
+      field.value = draft.summary.slice(0, 2000);
+    }
+    sessionStorage.removeItem("miranda-condition-enquiry");
+  } catch (_) {}
+  const cleanUrl = new URL(window.location.href);
+  cleanUrl.searchParams.delete("enquiry");
+  window.history.replaceState(null, "", cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
 }
 
 function setYear() {
@@ -660,7 +703,7 @@ function initMobileMenu() {
   menu.addEventListener("click", (evt) => {
     const link = evt.target.closest("a, button");
     if (link) {
-      setState(false, false);
+      setState(false, link.tagName === "BUTTON");
     }
   });
 
@@ -682,10 +725,17 @@ document.addEventListener("DOMContentLoaded", () => {
     initMobileMenu();
     return;
   }
+  if (pageType === "service") {
+    // Service guides currently have Greek content only; keep the document language honest.
+    setYear();
+    initMobileMenu();
+    return;
+  }
   if (pageType === "home") {
     initGallery();
     initContactForm();
     initContactReveal();
+    initConditionEnquiry();
   }
   setYear();
   setLanguage(detectPreferredLanguage());

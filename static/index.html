@@ -3,78 +3,139 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mirandas - Creative Repairs & Alterations</title>
+  <title>Επιδιορθώσεις Ρούχων &amp; Μοδίστρα στα Σεπόλια | Miranda’s</title>
+  <meta name="description" content="Επιδιορθώσεις και μεταποιήσεις ρούχων στα Σεπόλια, Αθήνα. Τζιν, νυφικά και υφάσματα σπιτιού με φροντίδα από τη Miranda. Στείλτε φωτογραφίες για εκτίμηση.">
+  <link rel="canonical" href="https://mirandas.gr/">
+  <meta property="og:title" content="Επιδιορθώσεις Ρούχων &amp; Μοδίστρα στα Σεπόλια | Miranda’s">
+  <meta property="og:description" content="Επιδιορθώσεις και μεταποιήσεις ρούχων στα Σεπόλια, Αθήνα. Τζιν, νυφικά και υφάσματα σπιτιού με φροντίδα από τη Miranda. Στείλτε φωτογραφίες για εκτίμηση.">
+  <meta property="og:url" content="https://mirandas.gr/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="el_GR">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:image" content="https://mirandas.gr/assets/images/denim_after.webp">
+  <meta property="og:image:alt" content="Miranda’s — φροντίδα ρούχων και υφασμάτων">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@400;600;700&family=Open+Sans:wght@400;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="/assets/stickers/bow.ico" type="image/x-icon">
+  <!-- Phone and weekday hours match existing main.js copy. Address number supplied by owner.
+       TODO: Confirm postal code, weekend/holiday hours and official social profiles before adding them. -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "@id": "https://mirandas.gr/#business",
+  "name": "Miranda's",
+  "url": "https://mirandas.gr/",
+  "telephone": "+302105158929",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Αυλώνος 88",
+    "addressLocality": "Αθήνα",
+    "addressCountry": "GR"
+  },
+  "areaServed": [
+    {
+      "@type": "Place",
+      "name": "Σεπόλια, Αθήνα"
+    },
+    {
+      "@type": "City",
+      "name": "Αθήνα"
+    }
+  ],
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ],
+      "opens": "09:00",
+      "closes": "15:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ],
+      "opens": "17:00",
+      "closes": "21:00"
+    }
+  ]
+}
+</script>
 </head>
 <body data-page="home">
+  <a class="skip-link" href="#main-content">Μετάβαση στο περιεχόμενο / Skip to content</a>
   <header class="nav">
     <div class="container nav-row">
-      <a class="brand" href="index.html#hero">
+      <a class="brand" href="/#hero">
         <picture>
           <!-- <source media="(max-width: 767.98px)" srcset="assets/logo/mobile_logo.svg"> -->
           <img class="brand-logo" src="assets/logo/thereallogo.svg" alt="Miranda's">
         </picture>
       </a>
-      <button class="menu-toggle" type="button" id="menu-toggle" aria-label="Open menu" aria-controls="mobile-menu" aria-expanded="false">
+      <button class="menu-toggle" type="button" id="menu-toggle" aria-label="Άνοιγμα μενού" aria-controls="mobile-menu" aria-expanded="false">
          <span class="menu-icon" aria-hidden="true"></span>
       </button>
       <nav class="links" aria-label="Primary">
-        <a id="nav-home" href="#hero">Home</a>
-        <a id="nav-about" href="#about">About</a>
-        <a id="nav-work" href="#work">Work</a>
-        <a id="nav-contact" href="#contact">Contact</a>
-        <a id="nav-stories" href="garment-stories.html">
-          <span class="lang-inline" data-lang="en">Garment Stories</span>
-          <span class="lang-inline" data-lang="el">Μικρό περιοδικό</span>
+        <a id="nav-home" href="#hero">Αρχική</a>
+        <a id="nav-about" href="#about">Σχετικά</a>
+        <a id="nav-work" href="#work">Δουλειές</a>
+        <a id="nav-contact" href="#contact">Επικοινωνία</a>
+        <a id="nav-stories" href="/garment-stories">
+          <span class="lang-inline" data-lang="en" lang="en">Garment Stories</span>
+          <span class="lang-inline" data-lang="el" lang="el">Μικρό περιοδικό</span>
         </a>
-        <a href="condition.html" id="nav-condition">Condition Rater</a>
+        <a href="/condition" id="nav-condition">Αξιολόγηση υφάσματος</a>
       </nav>
-      <button class="lang-toggle" type="button" id="lang-toggle" aria-label="Switch language">GR</button>
+      <button class="lang-toggle" type="button" id="lang-toggle" aria-label="Switch to English / Αλλαγή σε ελληνικά">EN</button>
     </div>
   </header>
   <div class="menu-overlay" id="menu-overlay" hidden></div>
   <div class="mobile-menu" id="mobile-menu" hidden role="dialog" aria-modal="true" aria-label="Menu">
     <nav aria-label="Mobile Primary">
-      <a id="mobile-nav-home" href="#hero">Home</a>
-      <a id="mobile-nav-about" href="#about">About</a>
-      <a id="mobile-nav-work" href="#work">Work</a>
-      <a id="mobile-nav-contact" href="#contact">Contact</a>
-      <a href="garment-stories.html" id="mobile-nav-stories">
-        <span class="lang-inline" data-lang="en">Garment Stories</span>
-        <span class="lang-inline" data-lang="el">Μικρό περιοδικό</span>
+      <a id="mobile-nav-home" href="#hero">Αρχική</a>
+      <a id="mobile-nav-about" href="#about">Σχετικά</a>
+      <a id="mobile-nav-work" href="#work">Δουλειές</a>
+      <a id="mobile-nav-contact" href="#contact">Επικοινωνία</a>
+      <a href="/garment-stories" id="mobile-nav-stories">
+        <span class="lang-inline" data-lang="en" lang="en">Garment Stories</span>
+        <span class="lang-inline" data-lang="el" lang="el">Μικρό περιοδικό</span>
       </a>
-      <a href="condition.html" id="mobile-nav-condition">Condition Rater</a>
-      <button class="lang-toggle mobile-lang-toggle" type="button" id="mobile-lang-toggle" aria-label="Switch language">GR</button>
+      <a href="/condition" id="mobile-nav-condition">Αξιολόγηση υφάσματος</a>
+      <button class="lang-toggle mobile-lang-toggle" type="button" id="mobile-lang-toggle" aria-label="Switch to English / Αλλαγή σε ελληνικά">EN</button>
     </nav>
   </div>
 
-  <main>
+  <main id="main-content" tabindex="-1">
     <section id="hero" class="hero">
       <div class="container hero-inner">
         <div class="hero-copy">
-          <p class="hand tag" id="hero-tag">Made-to-measure care</p>
-          <h1 class="display scribble-underline">Miranda's</h1>
-          <p class="lead" id="hero-lead">Thoughtful, high-quality <strong>repairs & alterations</strong> from denim to wedding dresses and home textiles.</p>
+          <p class="hand tag" id="hero-tag">Μοδίστρα</p>
+          <h1 class="display scribble-underline">Miranda's<span class="sr-only" id="hero-heading-detail"> — Επιδιορθώσεις ρούχων και μοδίστρα στα Σεπόλια, Αθήνα</span></h1>
+          <p class="lead" id="hero-lead"><strong>Επιδιορθώσεις και μεταποιήσεις ρούχων στα Σεπόλια, Αθήνα.</strong> Φροντίδα για το αγαπημένο σας τζιν, το νυφικό και τα υφάσματα του σπιτιού.</p>
           <div class="hero-actions">
-            <a class="btn btn-stitch" id="hero-btn-primary" href="#contact">Book a fitting ❤</a>
-            <a class="btn btn-secondary" id="hero-btn-secondary" href="#work">See the work</a>
+            <a class="btn btn-stitch" id="hero-btn-primary" href="#contact">Κλείστε ραντεβού</a>
+            <a class="btn btn-secondary" id="hero-btn-secondary" href="#work">Δείτε δουλειές</a>
           </div>
           <dl class="meta">
-            <div><dt id="hours-label">Hours</dt><dd id="hours-value">Mon–Fri, 09:00–15:00, 17:00–21:00</dd></div>
-            <div><dt id="location-label">Location</dt><dd id="location-value">Athens, Sepolia, GR</dd></div>
+            <div><dt id="hours-label">Ωράριο</dt><dd id="hours-value">Δευ-Παρ, 09:00-15:00, 17:00-21:00</dd></div>
+            <div><dt id="location-label">Περιοχή</dt><dd id="location-value">Αθήνα, Σεπόλια</dd></div>
           </dl>
         </div>
         <div class="paper torn hero-note" aria-label="Handmade promise">
-          <p class="muted hand" id="hero-quote">“We keep the original look—minimal visible change, maximum care.”</p>
-          <ul id="hero-note-list">
-            <li>Invisible mending for denim</li>
-            <li>Hand-finished hems & bridal adjustments</li>
-            <li>Home textiles resized with care</li>
-          </ul>
+          <p class="muted hand" id="hero-quote">Κρατάμε το αρχικό ύφος με τις απαραίτητες παρεμβάσεις, και τη μέγιστη φροντίδα και προσοχή.</p>
+          <ul id="hero-note-list"><li>Αόρατες επιδιορθώσεις σε denim</li><li>Στριφώματα στο χέρι και προσαρμογές σε βραδινά φορέματα.</li><li>Μεταποίηση κουρτινών με επίσκεψη κατ'οίκον για μέτρηση.</li></ul>
         </div>
       </div>
     </section>
@@ -82,21 +143,17 @@
     <section id="about" class="section">
       <div class="container about-grid paper torn">
         <div>
-          <h2 class="h2 scribble-underline" id="about-title">About the atelier</h2>
-          <p class="lead" id="about-lead">I’m Miranda, a tailor who believes every garment and fabric carries a story. My work keeps your favorites in rotation—stitched with restraint so the original character shines.</p>
+          <h2 class="h2 scribble-underline" id="about-title">Σχετικά με το εργαστήρι</h2>
+          <p class="lead" id="about-lead">Είμαι η Miranda, η μοδίστρα που χρειάζεστε για να κρατήσετε τα αγαπημένα σας ρούχα σε χρήση ακριβώς όπως τα έχετε φανταστεί! (ή και καλύτερα! 😉)</p>
           <div class="pill-row">
-            <span class="pill" id="pill-1">Tailored fits</span>
-            <span class="pill" id="pill-2">Mindful mending</span>
-            <span class="pill" id="pill-3">Home textiles</span>
+            <span class="pill" id="pill-1">Δημιουργικότητα</span>
+            <span class="pill" id="pill-2">Φαντασία</span>
+            <span class="pill" id="pill-3">Αισθητική</span>
           </div>
         </div>
         <div class="note card">
-          <h3 class="h3" id="specialties-title">Specialties</h3>
-          <ul id="specialties-list">
-            <li>Bridal and evening wear adjustments</li>
-            <li>Denim darning, color-matched threads</li>
-            <li>Curtain and upholstery tailoring</li>
-          </ul>
+          <h3 class="h3" id="specialties-title">Μερικές Ιδέες...</h3>
+          <ul id="specialties-list"><li>Στένεμα μέσης ή φάρδεμα σε τουαλέτες, τοποθέτηση caps, επιδιόρθωση ντεκολτέ</li><li>Ανανέωση των τζιν με ραφές στο ίδιο χρώμα, προεκτάσεις, μπάλωμα καβάλου, στρίφωμα με ορίτζιναλ, κρόσια / διασκοσμητικά σκισίματα</li><li>Τοποθέτηση μανικιών, Ανέβασμα ώμων, Στένεμα, Κόντεμα, Προσθήκη / Αλλαγή φόδρας</li></ul>
         </div>
       </div>
     </section>
@@ -104,30 +161,31 @@
     <section id="work" class="section alt">
       <div class="container">
         <header class="section-head">
-          <h2 class="h2 scribble-underline" id="work-heading">Before &amp; After</h2>
-          <p class="muted hand" id="work-subtitle">Small miracles, stitched by hand.</p>
+          <h2 class="h2 scribble-underline" id="work-heading">Πριν & Μετά</h2>
+          <p class="muted hand" id="work-subtitle">Μικρά θαύματα, ραμμένα με αγάπη και φροντίδα ⠂˖❥࿐</p>
         </header>
 
+        <!-- TODO: Confirm gallery image provenance and reuse permission; denim_after.webp carries a T-Bud Co. Creative watermark. -->
         <div class="gallery-wrap">
           <div class="gallery-grid">
             <div class="ba" aria-live="polite" aria-label="Before and after gallery" tabindex="0">
               <figure class="ba-figure">
-                <img id="before-img" src="assets/images/denim_before.webp" alt="Denim repair - before" loading="lazy" decoding="async" fetchpriority="high">
-                <figcaption id="before-label">Before</figcaption>
+                <img class="is-loaded" id="before-img" src="assets/images/denim_before.webp" alt="Τζιν πριν την επιδιόρθωση" loading="lazy" decoding="async" >
+                <figcaption id="before-label">Πριν</figcaption>
               </figure>
               <figure class="ba-figure">
-                <img id="after-img" src="assets/images/denim_after.webp" alt="Denim repair - after" loading="lazy" decoding="async">
-                <figcaption id="after-label">After</figcaption>
+                <img class="is-loaded" id="after-img" src="assets/images/denim_after.webp" alt="Τζιν μετά την επιδιόρθωση" loading="lazy" decoding="async">
+                <figcaption id="after-label">Μετά</figcaption>
               </figure>
             </div>
 
             <aside class="ba-aside">
-              <h3 class="h3" id="work-title">Denim repair</h3>
-              <p class="muted" id="work-note">Invisible patch & color-match stitching.</p>
+              <h3 class="h3" id="work-title">Επιδιόρθωση τζιν</h3>
+              <p class="muted" id="work-note">Μπάλωμα με ραφές που δεν ενοχλούν το δέρμα.</p>
               <ul class="thumbs" role="list" aria-label="Choose example">
-                <li><button class="thumb active" data-index="0" aria-pressed="true" aria-label="Show denim repair"><img src="assets/images/denim_after.webp" alt=""></button></li>
-                <li><button class="thumb" data-index="1" aria-label="Show evening dress hem"><img src="assets/images/dress_after.webp" alt=""></button></li>
-                <li><button class="thumb" data-index="2" aria-label="Show curtain resizing"><img src="assets/images/curtain_after.webp" alt=""></button></li>
+                <li><button class="thumb active" data-index="0" aria-pressed="true" aria-label="Show denim repair"><img src="assets/images/denim_after.webp" alt="" loading="lazy" decoding="async"></button></li>
+                <li><button class="thumb" data-index="1" aria-label="Show evening dress hem"><img src="assets/images/dress_after.webp" alt="" loading="lazy" decoding="async"></button></li>
+                <li><button class="thumb" data-index="2" aria-label="Show curtain resizing"><img src="assets/images/curtain_after.webp" alt="" loading="lazy" decoding="async"></button></li>
               </ul>
               <div class="ba-controls" aria-label="Slideshow controls">
                 <button type="button" class="ba-nav" id="ba-prev" aria-label="Previous example"><span aria-hidden="true">‹</span></button>
@@ -143,37 +201,47 @@
     </section>
 
     <section id="projects" class="section">
+      <div class="container"><h2 class="h2"><span class="lang-inline" data-lang="el" lang="el">Μεταποιήσεις ρούχων στην Αθήνα</span><span class="lang-inline" data-lang="en" lang="en">Clothing alterations in Athens</span></h2></div>
       <div class="container card-grid">
         <div class="card">
-          <h3 class="h3" id="card-1-title">Custom fits</h3>
-          <p class="muted" id="card-1-body">Waist, bust, and hem adjustments that honor the garment’s original lines.</p>
+          <h3 class="h3" id="card-1-title">Εφαρμογές στα μέτρα σας...</h3>
+          <p class="muted" id="card-1-body">Μετατροπές σε μέση, στήθος και μήκος που σέβονται το στύλ του ρούχου, ή ακόμα και του δίνουν νέο αέρα!</p>
         </div>
         <div class="card">
-          <h3 class="h3" id="card-2-title">Repair & revive</h3>
-          <p class="muted" id="card-2-body">Mending, darning, and reinforcing high-wear areas with thread-matched care.</p>
+          <h3 class="h3" id="card-2-title">Επιδιόρθωση & ανανέωση ρούχων!</h3>
+          <p class="muted" id="card-2-body">Τι καλύτερο από το να βλέπετε το ρούχο σας να ξαναζωντανεύει!</p>
         </div>
         <div class="card">
-          <h3 class="h3" id="card-3-title">Home textiles</h3>
-          <p class="muted" id="card-3-body">Curtains resized, cushions refreshed, and linens finished with neat seams.</p>
+          <h3 class="h3" id="card-3-title">Υφάσματα σπιτιού</h3>
+          <p class="muted" id="card-3-body">Κουρτίνες ραμμένες στο σωστό μήκος, μαξιλαροθήκες και μαξιλάρες καναπέ, λευκά είδη...</p>
         </div>
+      </div>
+
+      <div class="container service-links">
+        <h3 class="h3"><span class="lang-inline" data-lang="el" lang="el">Βρείτε την υπηρεσία που χρειάζεστε</span><span class="lang-inline" data-lang="en" lang="en">Find the service you need</span></h3>
+        <ul>
+          <li><a href="/epidiorthosi-tzin"><span class="lang-inline" data-lang="el" lang="el">Επιδιόρθωση τζιν: μπαλώματα και στριφώματα</span><span class="lang-inline" data-lang="en" lang="en">Jeans repairs and hems (Greek guide)</span></a></li>
+          <li><a href="/metapoiiseis-rouxon"><span class="lang-inline" data-lang="el" lang="el">Μεταποιήσεις ρούχων: εφαρμογή, μήκος και φόδρα</span><span class="lang-inline" data-lang="en" lang="en">Clothing alterations and fitting (Greek guide)</span></a></li>
+          <li><a href="/metapoiiseis-nyfikou"><span class="lang-inline" data-lang="el" lang="el">Μεταποιήσεις νυφικού και προετοιμασία για την πρόβα</span><span class="lang-inline" data-lang="en" lang="en">Bridal alterations and fitting preparation (Greek guide)</span></a></li>
+        </ul>
       </div>
     </section>
 
     <section id="contact" class="section alt contact-section">
       <div class="container contact-grid">
         <div>
-          <h2 class="h2 scribble-underline" id="contact-heading">Contact</h2>
-          <p id="contact-phone"><strong id="contact-phone-label">Phone:</strong> <button type="button" class="btn contact-reveal" id="reveal-phone">Call us</button></p>
-          <p id="contact-email"><strong id="contact-email-label">Email:</strong> <button type="button" class="btn contact-reveal" id="reveal-email">Email us</button></p>
-          <p id="contact-address"><strong>Address:</strong> Avlonos, Athens</p>
-          <!-- <p class="muted micro" id="contact-note">Future: AI-assisted intake for faster quotes and fit notes.</p> -->
-          <a class="btn btn-secondary" id="back-top" href="#hero">Back to top</a>
+          <h2 class="h2 scribble-underline" id="contact-heading">Επικοινωνία</h2>
+          <p id="contact-phone"><strong id="contact-phone-label">Τηλέφωνο:</strong> <a class="contact-link" href="tel:+302105158929">+30 210 5158929</a></p>
+          <p id="contact-email"><strong id="contact-email-label">Email:</strong> <button type="button" class="btn contact-reveal" id="reveal-email">Στείλτε email</button></p>
+          <p id="contact-address"><strong>Διεύθυνση:</strong> Αυλώνος 88, Σεπόλια, Αθήνα, Ελλάδα</p>
+          <p><a href="https://www.google.com/maps/search/?api=1&amp;query=%CE%91%CF%85%CE%BB%CF%8E%CE%BD%CE%BF%CF%82%2088%2C%20%CE%91%CE%B8%CE%AE%CE%BD%CE%B1%2C%20Greece"><span class="lang-inline" data-lang="el" lang="el">Οδηγίες για Αυλώνος 88, Αθήνα</span><span class="lang-inline" data-lang="en" lang="en">Directions to 88 Avlonos, Athens</span></a></p>
+          <a class="btn btn-secondary" id="back-top" href="#hero">Επιστροφή στην αρχή</a>
         </div>
 
-        <form class="card form" aria-label="Contact form">
-          <h3 class="h3" id="form-title">Book a fitting</h3>
+        <form class="card form" action="/api/contact" method="post" enctype="multipart/form-data" aria-label="Φόρμα επικοινωνίας">
+          <h3 class="h3" id="form-title">Κλείστε ραντεβού, αμέ! ❤</h3>
           <label>
-            <span id="label-name">Name</span>
+            <span id="label-name">Όνομα, Επώνυμο</span>
             <input type="text" name="name" autocomplete="name" required>
           </label>
           <label>
@@ -181,16 +249,16 @@
             <input type="email" name="email" autocomplete="email" required>
           </label>
           <label>
-            <span id="label-details">What do you need?</span>
-            <textarea name="details" rows="4" placeholder="Hem, repair, bridal fitting… an idea maybe?" required></textarea>
+            <span id="label-details">Τι χρειάζεστε;</span>
+            <textarea name="details" rows="4" placeholder="Στρίφωμα, μπάλωμα, πρόβα νυφικού…" required></textarea>
           </label>
           <label>
-            <span id="label-photos">Upload reference photos</span>
+            <span id="label-photos">Φωτογραφίες (έως 5, έως 4 MB η καθεμία και 10 MB συνολικά)</span>
             <input type="file" name="photos" accept="image/*" multiple>
           </label>
-          <div class="cf-turnstile" data-sitekey="0x4AAAAAACKs1aHL3A4iHDDR"></div>
-          <button type="submit" class="btn btn-stitch" id="form-submit">Send request</button>
-          <p class="micro muted" id="form-note">This form is static for now. A backend will soon add AI-powered job intake.</p>
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAACKs1aHL3A4iHDDR" data-size="compact"></div>
+          <button type="submit" class="btn btn-stitch" id="form-submit">Αποστολή</button>
+          <p class="micro muted" id="form-note">Στείλτε το αίτημά σας και θα απαντήσουμε σύντομα.</p>
         </form>
       </div>
     </section>
@@ -198,18 +266,17 @@
 
   <footer class="footer">
     <div class="container footer-row">
-      <small id="footer-note">© <span id="year"></span> Miranda — Creative repairs & alterations</small>
+      <small id="footer-note">&copy; <span id="year"></span> Miranda's - Δημιουργικές μεταποιήσεις & επιδιορθώσεις</small>
       <nav class="footer-links" aria-label="Footer">
-        <a href="#about" id="footer-about">About</a>
-        <a href="#contact" id="footer-contact">Contact</a>
+        <a href="#about" id="footer-about">Σχετικά</a>
+        <a href="#contact" id="footer-contact">Επικοινωνία</a>
       </nav>
     </div>
   </footer>
 
   <script src="main.js" defer></script>
   <script src="nav-active.js" defer></script>
-</body>
-
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</body>
 
 </html>

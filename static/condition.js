@@ -22,7 +22,7 @@ const specTranslations = {
       "Focus on cuffs, collars, hems for issues"
     ],
     heroNoteFoot:
-      "Your photos stay in-memory for scoring and are discarded right after.",
+      "Photos are sent to an AI service for assessment. This site's backend does not save evaluation photos.",
     wizardTitle: "3-step capture",
     wizardSubtitle: "Full item + texture + problem spots",
     steps: [
@@ -79,14 +79,14 @@ const specTranslations = {
     faqTitle: "FAQ",
     faq: {
       q1: "Are photos stored?",
-      a1: "No. They're compressed in your browser, sent for scoring, then discarded.",
+      a1: "Photo previews remain in this page while it is open. Compressed photos are sent to an AI service; this site's backend does not save evaluation photos.",
       q2: "Supported items?",
       a2: "Clothing, curtains, and other fabrics. Shoes/electronics/jewelry are refused.",
       q3: "Live evaluation unavailable?",
       a3: "Live evaluation is temporarily unavailable. Please try again."
     },
     footer: {
-      note: "&copy; <span id=\"year\"></span> Miranda - Creative repairs & alterations",
+      note: "&copy; <span id=\"year\"></span> Miranda's - Creative repairs & alterations",
       about: "About",
       contact: "Contact"
     },
@@ -133,7 +133,7 @@ const specTranslations = {
       "Εστιάστε σε μανσέτες, γιακάδες, στριφώματα"
     ],
     heroNoteFoot:
-      "Οι φωτογραφίες μένουν στη μνήμη μόνο για τη βαθμολόγηση και μετά διαγράφονται.",
+      "Οι φωτογραφίες αποστέλλονται σε υπηρεσία AI για αξιολόγηση. Ο διακομιστής του site δεν αποθηκεύει τις φωτογραφίες αξιολόγησης.",
     wizardTitle: "Λήψη σε 3 βήματα",
     wizardSubtitle: "Ολόκληρο ρούχο + υφή + προβληματικά σημεία",
     steps: [
@@ -185,14 +185,14 @@ const specTranslations = {
     faqTitle: "Συχνές ερωτήσεις",
     faq: {
       q1: "Αποθηκεύονται οι φωτογραφίες;",
-      a1: "Όχι. Συμπιέζονται στο browser σας, στέλνονται για βαθμολόγηση και μετά διαγράφονται.",
+      a1: "Οι προεπισκοπήσεις παραμένουν στη σελίδα όσο είναι ανοιχτή. Οι συμπιεσμένες φωτογραφίες αποστέλλονται σε υπηρεσία AI. Ο διακομιστής του site δεν αποθηκεύει τις φωτογραφίες αξιολόγησης.",
       q2: "Τι είδη υποστηρίζονται;",
       a2: "Ρούχα, κουρτίνες και άλλα υφάσματα. Παπούτσια/ηλεκτρονικά/κοσμήματα απορρίπτονται.",
       q3: "Live evaluation unavailable?",
       a3: "Live evaluation is temporarily unavailable. Please try again."
     },
     footer: {
-      note: "&copy; <span id=\"year\"></span> Miranda - Δημιουργικές επιδιορθώσεις & μεταποιήσεις",
+      note: "&copy; <span id=\"year\"></span> Miranda's - Δημιουργικές επιδιορθώσεις & μεταποιήσεις",
       about: "Σχετικά",
       contact: "Επικοινωνία"
     },
@@ -247,6 +247,42 @@ const langToggle = document.getElementById("lang-toggle");
 const mobileLangToggle = document.getElementById("mobile-lang-toggle");
 const wizardActions = document.querySelector(".wizard-actions");
 let evaluateErrorEl = null;
+let enquiryResult = null;
+
+function updateResultEnquiry() {
+  const panel = document.getElementById("result-enquiry");
+  if (!panel || !enquiryResult) return;
+  const { score, issues, itemType, repair } = enquiryResult;
+  panel.hidden = score === null;
+  if (score === null) return;
+  const english = state.lang === "en";
+  const item = t().options[itemType === "other fabric" ? "other" : itemType] || itemType;
+  const summary = english
+    ? `Please assess my item.\nAI photo estimate (requires in-person review)\nItem: ${item}\nScore: ${score}/5\nDetected issues: ${issues.join(", ") || "None reported"}\nRepair suggested: ${repair ? "Yes" : "No"}`
+    : `Θα ήθελα εκτίμηση για το αντικείμενό μου.\nΕνδεικτική αξιολόγηση φωτογραφιών με AI (χρειάζεται έλεγχος από κοντά)\nΑντικείμενο: ${item}\nΒαθμός: ${score}/5\nΠαρατηρήσεις: ${issues.join(", ") || "Δεν αναφέρθηκαν"}\nΠρόταση επιδιόρθωσης: ${repair ? "Ναι" : "Όχι"}`;
+  document.getElementById("condition-summary").value = summary.slice(0, 2000);
+  const link = document.getElementById("result-contact");
+  link.textContent = english ? "Send the result to Miranda for an estimate" : "Στείλτε το αποτέλεσμα στη Miranda για εκτίμηση";
+  link.className = repair || score <= 2 ? "btn btn-stitch" : "btn btn-secondary";
+  document.getElementById("result-enquiry-note").textContent = english
+    ? "The photo assessment is only a starting point. Review the summary in the contact form and add your question before sending. Photos are not transferred."
+    : "Η αξιολόγηση από φωτογραφίες είναι ενδεικτική. Ελέγξτε τη σύνοψη στη φόρμα και προσθέστε την ερώτησή σας πριν την αποστολή. Οι φωτογραφίες δεν μεταφέρονται.";
+  document.getElementById("condition-summary-label").textContent = english ? "Your enquiry summary" : "Σύνοψη για το αίτημά σας";
+}
+
+document.getElementById("result-contact")?.addEventListener("click", (event) => {
+  try {
+    sessionStorage.setItem("miranda-condition-enquiry", JSON.stringify({
+      summary: document.getElementById("condition-summary").value,
+      createdAt: Date.now(),
+    }));
+  } catch (_) {
+    event.preventDefault();
+    document.getElementById("enquiry-storage-fallback").hidden = false;
+    document.getElementById("condition-summary").focus();
+    document.getElementById("condition-summary").select();
+  }
+});
 
 function t() {
   return translations[state.lang] || translations.en;
@@ -657,11 +693,20 @@ function renderResult(data) {
   const lowConf =
     (data.confidence ?? 0) < 0.45 || data.confidence_label === "low";
   resultTips.hidden = !lowConf;
+  enquiryResult = {
+    score,
+    itemType: state.itemType,
+    repair: data.repair_needed === true,
+    issues: issues.filter((issue) => typeof issue === "string").slice(0, 8).map((issue) => issue.slice(0, 150)),
+  };
+  updateResultEnquiry();
   resultCard.hidden = false;
 }
 
 async function evaluate() {
   if (state.isEvaluating) return;
+  // Hide the preceding result while a new assessment is in progress.
+  resultCard.hidden = true;
   setEvaluateError("");
   setEvaluating(true);
 
@@ -790,8 +835,14 @@ function applyStaticText() {
       .join("");
   if (langToggle) langToggle.textContent = t().nav.toggle;
   if (mobileLangToggle) mobileLangToggle.textContent = t().nav.toggle;
+  [langToggle, mobileLangToggle].forEach((button) => button?.setAttribute("aria-label",
+    state.lang === "en" ? "Switch to Greek" : "Αλλαγή σε αγγλικά"));
+  document.getElementById("menu-toggle")?.setAttribute("aria-label",
+    state.lang === "en" ? "Open menu" : "Άνοιγμα μενού");
   const footerNote = document.getElementById("footer-note");
   if (footerNote) footerNote.innerHTML = t().footer.note;
+  setYear();
+  updateResultEnquiry();
 }
 
 function setUpNavigation() {

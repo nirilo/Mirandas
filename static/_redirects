@@ -1,0 +1,10 @@
+# Pages serves /condition and the other extensionless paths directly.
+# Pages automatically redirects *.html to those paths; never redirect back.
+/index / 301
+/index/ / 301
+/condition/ /condition 301
+/garment-stories/ /garment-stories 301
+/garment-stories-ai-old-clothes/ /garment-stories-ai-old-clothes 301
+/epidiorthosi-tzin/ /epidiorthosi-tzin 301
+/metapoiiseis-rouxon/ /metapoiiseis-rouxon 301
+/metapoiiseis-nyfikou/ /metapoiiseis-nyfikou 301
