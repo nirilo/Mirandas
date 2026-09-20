@@ -518,7 +518,7 @@ function applyTranslations(lang) {
   document.documentElement.lang = currentLang === "en" ? "en" : "el";
   setText("hero-heading-detail", currentLang === "en"
     ? " — Clothing repairs and tailoring in Sepolia, Athens"
-    : " — Επιδιορθώσεις ρούχων και μοδίστρα στα Σεπόλια, Αθήνα");
+    : " — Επιδιορθώσεις ρούχων στα Σεπόλια");
 
   setText("brand-subtitle", t.brandSubtitle);
   setText("nav-home", t.nav.home);

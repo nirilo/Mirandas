@@ -22,7 +22,7 @@ const specTranslations = {
       "Focus on cuffs, collars, hems for issues"
     ],
     heroNoteFoot:
-      "Photos are sent to an AI service for assessment. This site's backend does not save evaluation photos.",
+      "Photos stay in-memory for scoring and are discarded right after.",
     wizardTitle: "3-step capture",
     wizardSubtitle: "Full item + texture + problem spots",
     steps: [
@@ -79,7 +79,7 @@ const specTranslations = {
     faqTitle: "FAQ",
     faq: {
       q1: "Are photos stored?",
-      a1: "Photo previews remain in this page while it is open. Compressed photos are sent to an AI service; this site's backend does not save evaluation photos.",
+      a1: "Photo previews remain in this page while it is open. Compressed photos are sent to an AI service; this site does not save evaluation photos.",
       q2: "Supported items?",
       a2: "Clothing, curtains, and other fabrics. Shoes/electronics/jewelry are refused.",
       q3: "Live evaluation unavailable?",
@@ -123,7 +123,7 @@ const specTranslations = {
     heroTag: "ΑΙ Εκτίμηση κατάστασης υφάσματος",
     heroTitle: "Έλεγχος υφάσματος σε 3 λήψεις",
     heroLead:
-      "Μεταφορτώστε μια φωτογραφία ολόκληρου του αντικειμένου, ένα κοντινό στην υφή και τυχόν προβληματικά σημεία. Θα βαθμολογήσουμε 1-5, θα σημειώσουμε θέματα και θα μοιραστούμε σύντομες συμβουλές.",
+      "Μεταφορτώστε μια φωτογραφία ολόκληρου του αντικειμένου, μια κοντινή στην υφή και τυχόν προβληματικά σημεία. Θα βαθμολογηθεί σε κλίμακα 1-5, και θα μοιραστούμε σύντομες συμβουλές.",
     heroBtnPrimary: "Ξεκινήστε την αξιολόγηση",
     heroBtnSecondary: "Χρειάζεστε βοήθεια;",
     heroNoteTitle: "Τι θα χρειαστείτε",
@@ -133,7 +133,7 @@ const specTranslations = {
       "Εστιάστε σε μανσέτες, γιακάδες, στριφώματα"
     ],
     heroNoteFoot:
-      "Οι φωτογραφίες αποστέλλονται σε υπηρεσία AI για αξιολόγηση. Ο διακομιστής του site δεν αποθηκεύει τις φωτογραφίες αξιολόγησης.",
+      "Οι φωτογραφίες αποστέλλονται σε υπηρεσία AI για αξιολόγηση. Το site δεν αποθηκεύει τις φωτογραφίες αξιολόγησης.",
     wizardTitle: "Λήψη σε 3 βήματα",
     wizardSubtitle: "Ολόκληρο ρούχο + υφή + προβληματικά σημεία",
     steps: [
@@ -158,7 +158,7 @@ const specTranslations = {
     noPhoto: "Δεν υπάρχει φωτογραφία ακόμη",
     itemSelectTitle: "Επιλογή τύπου αντικειμένου",
     itemSelectBody:
-      "Διαλέξτε την πιο κοντινή επιλογή ώστε η AI να χρησιμοποιήσει το σωστό κριτήριο.",
+      "Διαλέξτε την πιο κοντινή επιλογή ώστε το AI να χρησιμοποιήσει το σωστό κριτήριο.",
     itemLabel: "Αντικείμενο",
     options: { clothing: "Ρούχο", curtain: "Κουρτίνα", other: "Άλλο ύφασμα" },
     finalReady: "Έτοιμοι για αξιολόγηση και των τριών φωτογραφιών.",
@@ -185,7 +185,7 @@ const specTranslations = {
     faqTitle: "Συχνές ερωτήσεις",
     faq: {
       q1: "Αποθηκεύονται οι φωτογραφίες;",
-      a1: "Οι προεπισκοπήσεις παραμένουν στη σελίδα όσο είναι ανοιχτή. Οι συμπιεσμένες φωτογραφίες αποστέλλονται σε υπηρεσία AI. Ο διακομιστής του site δεν αποθηκεύει τις φωτογραφίες αξιολόγησης.",
+      a1: "Οι προεπισκοπήσεις παραμένουν στη σελίδα όσο είναι ανοιχτή. Οι συμπιεσμένες φωτογραφίες αποστέλλονται σε υπηρεσία AI. Το site δεν αποθηκεύει τις φωτογραφίες αξιολόγησης.",
       q2: "Τι είδη υποστηρίζονται;",
       a2: "Ρούχα, κουρτίνες και άλλα υφάσματα. Παπούτσια/ηλεκτρονικά/κοσμήματα απορρίπτονται.",
       q3: "Live evaluation unavailable?",
@@ -262,7 +262,7 @@ function updateResultEnquiry() {
     : `Θα ήθελα εκτίμηση για το αντικείμενό μου.\nΕνδεικτική αξιολόγηση φωτογραφιών με AI (χρειάζεται έλεγχος από κοντά)\nΑντικείμενο: ${item}\nΒαθμός: ${score}/5\nΠαρατηρήσεις: ${issues.join(", ") || "Δεν αναφέρθηκαν"}\nΠρόταση επιδιόρθωσης: ${repair ? "Ναι" : "Όχι"}`;
   document.getElementById("condition-summary").value = summary.slice(0, 2000);
   const link = document.getElementById("result-contact");
-  link.textContent = english ? "Send the result to Miranda for an estimate" : "Στείλτε το αποτέλεσμα στη Miranda για εκτίμηση";
+  link.textContent = english ? "Send the result to Miranda for an estimate" : "Στείλτε το αποτέλεσμα στη Μιράντα για εκτίμηση";
   link.className = repair || score <= 2 ? "btn btn-stitch" : "btn btn-secondary";
   document.getElementById("result-enquiry-note").textContent = english
     ? "The photo assessment is only a starting point. Review the summary in the contact form and add your question before sending. Photos are not transferred."
