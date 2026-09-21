@@ -566,29 +566,6 @@ function initPhoneReveal() {
   });
 }
 
-function initContactMap() {
-  const button = document.getElementById('map-toggle');
-  const container = document.getElementById('contact-map');
-  if (!button || !container) return;
-  button.hidden = false;
-  button.addEventListener('click', () => {
-    const expanded = button.getAttribute('aria-expanded') !== 'true';
-    if (expanded && !container.firstElementChild) {
-      const frame = document.createElement('iframe');
-      frame.title = currentLang === 'en' ? 'Map: Miranda’s, 88 Avlonos, Sepolia, Athens'
-        : 'Χάρτης: Miranda’s, Αυλώνος 88, Σεπόλια, Αθήνα';
-      frame.referrerPolicy = 'no-referrer-when-downgrade';
-      // No Google request until this explicit interaction; no API key or guessed coordinates.
-      frame.src = 'https://www.google.com/maps?q=' + encodeURIComponent('Αυλώνος 88, Σεπόλια, Αθήνα, Ελλάδα') + '&output=embed';
-      container.append(frame);
-    }
-    container.hidden = !expanded;
-    button.setAttribute('aria-expanded', String(expanded));
-    button.querySelector('[data-lang="el"]').textContent = expanded ? 'Κλείσιμο χάρτη · Αυλώνος 88' : 'Προβολή χάρτη · Αυλώνος 88';
-    button.querySelector('[data-lang="en"]').textContent = expanded ? 'Hide map · 88 Avlonos' : 'Show map · 88 Avlonos';
-  });
-}
-
 function applyTranslations(lang) {
   currentLang = lang === "en" ? "en" : "el";
   const t = translations[currentLang];
@@ -818,7 +795,6 @@ document.addEventListener("DOMContentLoaded", () => {
     initGallery();
     initContactForm();
     initContactReveal();
-    initContactMap();
     initConditionEnquiry();
   }
   setYear();

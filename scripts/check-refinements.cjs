@@ -12,7 +12,7 @@ const routes = ['/', '/garment-stories', '/garment-stories-ai-old-clothes', '/co
   const browser = await chromium.launch({ channel: 'chrome', headless: true });
   try {
     const context = await browser.newContext();
-    let phoneRequests = 0, mapRequests = 0, mode = 'success', release;
+    let phoneRequests = 0, mode = 'success', release;
     const errors = [];
     await context.route('**/*', async route => {
       const url = new URL(route.request().url());
@@ -28,7 +28,6 @@ const routes = ['/', '/garment-stories', '/garment-stories-ai-old-clothes', '/co
           ? { ok: true, phone: '<img src=x>' } : { ok: true, phone: fixturePhone }) });
       }
       if (url.origin === origin) return route.continue();
-      if (url.hostname === 'www.google.com') mapRequests++;
       return route.fulfill({ contentType: 'text/plain', body: '' });
     });
     const page = await context.newPage();
@@ -82,7 +81,6 @@ const routes = ['/', '/garment-stories', '/garment-stories-ai-old-clothes', '/co
     }
     console.log('PASS: navigation, both languages, layout and image checks. Testing contact interactions.');
     assert.equal(phoneRequests, 0, 'No automatic phone request on any page/language');
-    assert.equal(mapRequests, 0, 'No automatic map resources');
     for (const width of [390,1280]) {
       await page.setViewportSize({ width, height: 900 });
       for (const route of ['/', ...guides]) {
@@ -137,20 +135,25 @@ const routes = ['/', '/garment-stories', '/garment-stories-ai-old-clothes', '/co
         await page.waitForSelector('a[href^="tel:"]');
       }
       await page.goto(origin + '/');
-      const mapsBefore = mapRequests;
-      assert.equal(await page.locator('#contact-map iframe').count(), 0);
-      await page.locator('#map-toggle').click();
-      await page.waitForFunction(() => document.querySelector('#contact-map iframe'));
-      await page.locator('#contact-map iframe').waitFor();
-      assert.equal(await page.locator('#map-toggle').getAttribute('aria-expanded'), 'true');
-      assert.match(await page.locator('#contact-map iframe').getAttribute('src'), /output=embed/);
-      assert.equal(await page.locator('#contact-map iframe').evaluate(el => el.getBoundingClientRect().width <= 340), true);
-      assert.equal(await page.locator('a[href^="https://www.google.com/maps/search/"]').isVisible(), true);
-      await page.locator('#map-toggle').click();
-      assert.equal(await page.locator('#contact-map').isVisible(), false);
-      await page.locator('#map-toggle').click();
-      await page.waitForTimeout(100);
-      assert.equal(mapRequests, mapsBefore + 1, 'Reopening must reuse the map');
+      const map = page.locator('#contact-map iframe');
+      assert.equal(await map.count(), 1);
+      assert.equal(await map.isVisible(), true);
+      assert.equal(await page.locator('#map-toggle').count(), 0);
+      assert.match(await map.getAttribute('src'), /^https:\/\/www\.google\.com\/maps\/embed\?pb=/);
+      assert.equal(await map.getAttribute('loading'), 'lazy');
+      assert.equal(await map.getAttribute('referrerpolicy'), 'strict-origin-when-cross-origin');
+      assert.equal(await map.getAttribute('allowfullscreen'), '');
+      assert.equal(await map.evaluate(el => {
+        const box = el.getBoundingClientRect();
+        return box.width <= 340 && Math.abs(box.width / box.height - 4 / 3) < .01;
+      }), true);
+      assert.equal(await page.locator('a[href="https://maps.app.goo.gl/izdkuL9PTM4MSUpm9"]').isVisible(), true);
+      for (const lang of ['el', 'en']) {
+        if (await page.locator('html').getAttribute('lang') !== lang) {
+          await page.locator('#lang-toggle').evaluate(el => el.click());
+        }
+        assert.match(await map.getAttribute('title'), lang === 'en' ? /^Map: Miranda’s/ : /^Χάρτης: Miranda’s/);
+      }
       if (process.env.REVIEW_DIR) {
         await page.locator('#contact').screenshot({ path: path.join(process.env.REVIEW_DIR, `contact-map-${width}.png`) });
       }
@@ -174,8 +177,11 @@ const routes = ['/', '/garment-stories', '/garment-stories-ai-old-clothes', '/co
       assert.match(await fallback.locator('h1').innerText(), /Σεπόλια/);
       assert.equal(await fallback.locator('[data-phone-reveal]').isVisible(), false);
     }
+    await fallback.goto(origin + '/');
+    assert.equal(await fallback.locator('#contact-map iframe').isVisible(), true);
+    assert.match(await fallback.locator('#contact-map iframe').getAttribute('title'), /^Χάρτης: Miranda’s/);
     await noJS.close();
     assert.deepEqual(errors, []);
-    console.log('PASS: 64 page/viewport/language cases, matching navigation, translations, no overflow/default-blue links, natural image ratios; phone success/missing-secret/network/invalid/retry/repeated-click/language tests on desktop and mobile; map opt-in/reuse/directions, guide spacing/destinations, and JS/no-JS fallback. No page errors. External services mocked.');
+    console.log('PASS: 64 page/viewport/language cases, matching navigation, translations, no overflow/default-blue links, natural image ratios; phone success/missing-secret/network/invalid/retry/repeated-click/language tests on desktop and mobile; responsive lazy map/accessibility/directions, guide spacing/destinations, and JS/no-JS fallback. No page errors. External services mocked.');
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });
