@@ -18,6 +18,41 @@ const env = {
 const call = (url, init) => worker.fetch(new Request(url, init), env, {});
 let checks = 0;
 const expect = (actual, expected) => { assert.equal(actual, expected); checks++; };
+// Synthetic fixture only; never use the production secret in test output or source.
+const fixturePhone = '+1 202 555 0100';
+for (const host of ['mirandas.gr', 'www.mirandas.gr']) {
+  const url = `https://${host}/api/phone`;
+  for (const value of [undefined, '', 'invalid', '+123', '<script>']) {
+    const response = await worker.fetch(new Request(url), { PHONE_NUMBER: value }, {});
+    expect(response.status, 503);
+    expect((await response.json()).error, 'Phone temporarily unavailable');
+    expect(response.headers.get('cache-control'), 'no-store, private');
+  }
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const response = await worker.fetch(new Request(url, { headers: { Origin: `https://${host}` } }), { PHONE_NUMBER: fixturePhone, PRIVATE_OTHER: 'never-return' }, {});
+    expect(response.status, 200);
+    expect(response.headers.get('Access-Control-Allow-Origin'), `https://${host}`);
+    expect(response.headers.get('Vary'), 'Origin');
+    expect(response.headers.get('cache-control'), 'no-store, private');
+    expect(response.headers.get('cdn-cache-control'), 'no-store');
+    expect(response.headers.get('x-content-type-options'), 'nosniff');
+    const data = await response.json();
+    expect(data.phone, fixturePhone);
+    expect(Object.keys(data).sort().join(','), 'ok,phone');
+  }
+  for (const method of ['POST', 'HEAD', 'PUT']) {
+    const response = await worker.fetch(new Request(url, { method }), { PHONE_NUMBER: fixturePhone }, {});
+    expect(response.status, 405);
+    expect(response.headers.get('Allow'), 'GET, OPTIONS');
+    expect(response.headers.get('cache-control'), 'no-store, private');
+  }
+  const untrusted = await worker.fetch(new Request(url, { headers: { Origin: 'https://untrusted.example' } }), { PHONE_NUMBER: fixturePhone }, {});
+  expect(untrusted.status, 403);
+  expect(untrusted.headers.get('Access-Control-Allow-Origin'), null);
+  const options = await worker.fetch(new Request(url, { method: 'OPTIONS', headers: { Origin: `https://${host}` } }), {}, {});
+  expect(options.status, 204);
+  expect(options.headers.get('Access-Control-Allow-Methods'), 'GET, OPTIONS');
+}
 // Direct non-API calls must never serve assets or redirect either hostname.
 for (const host of ['mirandas.gr', 'www.mirandas.gr']) {
   for (const protocol of ['https:', 'http:']) {

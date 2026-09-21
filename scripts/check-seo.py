@@ -114,11 +114,19 @@ for name, page in pages.items():
         assert data['@context'] == 'https://schema.org'
         assert data['@type'] in ['LocalBusiness', 'BlogPosting']
         assert data['url'] == urls[name]
+        assert 'telephone' not in data, (name, 'Phone must not be exposed in structured data')
+    assert not any(tag == 'a' and a.get('href', '').startswith('tel:') for tag, a in page.nodes), (name, 'Phone must be revealed only after interaction')
+    assert {'lang-toggle', 'mobile-lang-toggle'} <= page.ids, (name, 'Shared language controls missing')
 
 services = ['epidiorthosi-tzin.html', 'metapoiiseis-rouxon.html', 'metapoiiseis-nyfikou.html']
 home_links = {a.get('href') for tag, a in pages['index.html'].nodes if tag == 'a'}
 assert {'/' + Path(name).stem for name in services} <= home_links, 'Orphan service page'
 assert all(urls[name] in locs for name in services)
+story_links = {a.get('href') for tag, a in pages['garment-stories.html'].nodes if tag == 'a'}
+assert {'/' + Path(name).stem for name in services} <= story_links, 'Journal guide links missing'
+for name in services:
+    assert any(a.get('data-lang') == 'en' for _, a in pages[name].nodes), (name, 'English guide content missing')
+assert 'phoneParts' not in (ROOT / 'main.js').read_text(encoding='utf-8'), 'Do not embed phone fragments in client JavaScript'
 for config in ['wrangler.toml.example', 'wrangler.toml']:
     path = ROOT.parent / config
     if not path.exists(): continue  # Local deployment config is intentionally gitignored.

@@ -3,6 +3,10 @@ export default {
     const url = new URL(request.url);
 
     // Cloudflare Pages serves the website. This Worker is routed only to /api/*.
+    if (url.pathname === "/api/phone") {
+      return handlePhone(request, env);
+    }
+
     if (url.pathname === "/api/evaluate") {
       return handleEvaluate(request, env);
     }
@@ -22,6 +26,34 @@ export default {
     });
   },
 };
+
+function handlePhone(request, env) {
+  const headers = {
+    ...corsHeaders(request),
+    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Vary": "Origin",
+    "Content-Type": "application/json; charset=utf-8",
+    "Cache-Control": "no-store, private",
+    "CDN-Cache-Control": "no-store",
+    "X-Content-Type-Options": "nosniff",
+  };
+  const respond = (status, payload) => new Response(JSON.stringify(payload), { status, headers });
+  if (request.method === "OPTIONS") return new Response(null, { status: 204, headers });
+  if (request.method !== "GET") {
+    headers.Allow = "GET, OPTIONS";
+    return respond(405, { ok: false, error: "Method not allowed" });
+  }
+  // Reuse the site's origin allowlist. This is a public reveal, not authentication.
+  if (request.headers.has("Origin") && !headers["Access-Control-Allow-Origin"]) {
+    return respond(403, { ok: false, error: "Origin not allowed" });
+  }
+  const phone = typeof env.PHONE_NUMBER === "string" ? env.PHONE_NUMBER.trim() : "";
+  const dial = phone.replace(/[\s().-]/g, "");
+  if (!/^[+\d\s().-]+$/.test(phone) || !/^\+[1-9]\d{7,14}$/.test(dial)) {
+    return respond(503, { ok: false, error: "Phone temporarily unavailable" });
+  }
+  return respond(200, { ok: true, phone });
+}
 
 //testing area
 // async function aiHealth(request, env) {

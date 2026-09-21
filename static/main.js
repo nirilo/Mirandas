@@ -80,7 +80,10 @@ const specTranslations = {
     contactEmail: "<strong>Email:</strong>",
     contactPhoneLabel: "Phone:",
     contactEmailLabel: "Email:",
-    revealPhone: "Call us",
+    revealPhone: "Phone number",
+    phoneLoading: "Loading phone number…",
+    phoneError: "The number is unavailable. Please try again or use the contact form.",
+    phoneReady: "Ready to call.",
     revealEmail: "Email us",
     contactAddress: "<strong>Address:</strong> 88 Avlonos, Sepolia, Athens, Greece",
     backTop: "Back to top",
@@ -157,7 +160,10 @@ const specTranslations = {
     contactEmail: "<strong>Email:</strong>",
     contactPhoneLabel: "Τηλέφωνο:",
     contactEmailLabel: "Email:",
-    revealPhone: "\u039a\u03b1\u03bb\u03ad\u03c3\u03c4\u03b5 \u03bc\u03b1\u03c2",
+    revealPhone: "Τηλεφώνο",
+    phoneLoading: "Φόρτωση τηλεφώνου…",
+    phoneError: "Το τηλέφωνο δεν είναι διαθέσιμο. Δοκιμάστε ξανά ή χρησιμοποιήστε τη φόρμα επικοινωνίας.",
+    phoneReady: "Έτοιμοι για κλήση.",
     revealEmail: "\u03a3\u03c4\u03b5\u03af\u03bb\u03c4\u03b5 email",
     contactAddress: "<strong>Διεύθυνση:</strong> Αυλώνος 88, Σεπόλια, Αθήνα, Ελλάδα",
     backTop: "Επιστροφή στην αρχή",
@@ -487,15 +493,11 @@ function initContactForm() {
 }
 
 function initContactReveal() {
-  const phoneBtn = document.getElementById("reveal-phone");
   const emailBtn = document.getElementById("reveal-email");
-  if (!phoneBtn && !emailBtn) return;
+  if (!emailBtn) return;
 
   const emailParts = ["contact", "mirandas", "gr"];
-  const phoneParts = ["+30", "210", "5158929"];
   const email = `${emailParts[0]}@${emailParts[1]}.${emailParts[2]}`;
-  const phoneDisplay = `${phoneParts[0]} ${phoneParts[1]} ${phoneParts[2]}`;
-  const phoneHref = `tel:${phoneParts.join("")}`;
 
   const reveal = (btn, href, text) => {
     if (!btn) return;
@@ -508,14 +510,95 @@ function initContactReveal() {
     });
   };
 
-  reveal(phoneBtn, phoneHref, phoneDisplay);
   reveal(emailBtn, `mailto:${email}`, email);
+}
+
+function refreshPhoneLabels() {
+  const t = translations[currentLang];
+  document.querySelectorAll('.phone-reveal').forEach(container => {
+    const button = container.querySelector('[data-phone-reveal]');
+    const status = container.querySelector('.phone-status');
+    if (button) button.textContent = t.revealPhone;
+    const state = container.dataset.state;
+    status.textContent = state === 'loading' ? t.phoneLoading
+      : state === 'error' ? t.phoneError : state === 'ready' ? t.phoneReady : '';
+  });
+}
+
+function initPhoneReveal() {
+  document.querySelectorAll('[data-phone-reveal]').forEach(button => {
+    const container = button.closest('.phone-reveal');
+    container.hidden = false;
+    button.addEventListener('click', async () => {
+      if (container.dataset.state === 'loading' || container.dataset.state === 'ready') return;
+      container.dataset.state = 'loading';
+      button.disabled = true;
+      button.setAttribute('aria-busy', 'true');
+      refreshPhoneLabels();
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      try {
+        const response = await fetch('/api/phone', { cache: 'no-store', signal: controller.signal });
+        if (!response.ok) throw new Error('Phone unavailable');
+        const payload = await response.json();
+        const phone = typeof payload.phone === 'string' ? payload.phone.trim() : '';
+        const dial = phone.replace(/[\s().-]/g, '');
+        if (!payload.ok || !/^[+\d\s().-]+$/.test(phone) || !/^\+[1-9]\d{7,14}$/.test(dial)) {
+          throw new Error('Invalid phone response');
+        }
+        const link = document.createElement('a');
+        link.className = 'contact-link content-link';
+        link.href = `tel:${dial}`;
+        link.textContent = phone;
+        const shouldFocus = document.activeElement === button || document.activeElement === document.body;
+        button.replaceWith(link);
+        container.dataset.state = 'ready';
+        if (shouldFocus) link.focus({ preventScroll: true });
+      } catch (_) {
+        container.dataset.state = 'error';
+        button.disabled = false;
+      } finally {
+        clearTimeout(timeout);
+        button.removeAttribute('aria-busy');
+        refreshPhoneLabels();
+      }
+    });
+  });
+}
+
+function initContactMap() {
+  const button = document.getElementById('map-toggle');
+  const container = document.getElementById('contact-map');
+  if (!button || !container) return;
+  button.hidden = false;
+  button.addEventListener('click', () => {
+    const expanded = button.getAttribute('aria-expanded') !== 'true';
+    if (expanded && !container.firstElementChild) {
+      const frame = document.createElement('iframe');
+      frame.title = currentLang === 'en' ? 'Map: Miranda’s, 88 Avlonos, Sepolia, Athens'
+        : 'Χάρτης: Miranda’s, Αυλώνος 88, Σεπόλια, Αθήνα';
+      frame.referrerPolicy = 'no-referrer-when-downgrade';
+      // No Google request until this explicit interaction; no API key or guessed coordinates.
+      frame.src = 'https://www.google.com/maps?q=' + encodeURIComponent('Αυλώνος 88, Σεπόλια, Αθήνα, Ελλάδα') + '&output=embed';
+      container.append(frame);
+    }
+    container.hidden = !expanded;
+    button.setAttribute('aria-expanded', String(expanded));
+    button.querySelector('[data-lang="el"]').textContent = expanded ? 'Κλείσιμο χάρτη · Αυλώνος 88' : 'Προβολή χάρτη · Αυλώνος 88';
+    button.querySelector('[data-lang="en"]').textContent = expanded ? 'Hide map · 88 Avlonos' : 'Show map · 88 Avlonos';
+  });
 }
 
 function applyTranslations(lang) {
   currentLang = lang === "en" ? "en" : "el";
   const t = translations[currentLang];
   document.documentElement.lang = currentLang === "en" ? "en" : "el";
+  document.querySelectorAll('[data-alt-el]').forEach(el => { el.alt = el.dataset[currentLang === 'en' ? 'altEn' : 'altEl']; });
+  document.querySelectorAll('[data-aria-el]').forEach(el => { el.setAttribute('aria-label', el.dataset[currentLang === 'en' ? 'ariaEn' : 'ariaEl']); });
+  const map = document.querySelector('#contact-map iframe');
+  if (map) map.title = currentLang === 'en' ? 'Map: Miranda’s, 88 Avlonos, Sepolia, Athens'
+    : 'Χάρτης: Miranda’s, Αυλώνος 88, Σεπόλια, Αθήνα';
+  refreshPhoneLabels();
   setText("hero-heading-detail", currentLang === "en"
     ? " — Clothing repairs and tailoring in Sepolia, Athens"
     : " — Επιδιορθώσεις ρούχων στα Σεπόλια");
@@ -568,7 +651,6 @@ function applyTranslations(lang) {
   setText("contact-heading", t.contactHeading);
   setText("contact-phone-label", t.contactPhoneLabel || "Phone:");
   setText("contact-email-label", t.contactEmailLabel || "Email:");
-  setText("reveal-phone", t.revealPhone || "Call us");
   setText("reveal-email", t.revealEmail || "Email us");
   setText("contact-address", t.contactAddress, true);
   // setText("contact-note", t.contactNote);
@@ -650,7 +732,13 @@ function initLangToggle() {
   if (!toggles.length) return;
   toggles.forEach(btn => {
     btn.addEventListener("click", () => {
+      // Keep the current reading block in place when translated paragraphs reflow.
+      const readingLine = (document.querySelector('.nav')?.offsetHeight || 0) + 16;
+      const anchor = Array.from(document.querySelectorAll('main h1, main h2, main h3, main p, main li, main figure'))
+        .find(el => { const box = el.getBoundingClientRect(); return box.height && box.bottom > readingLine && box.top < innerHeight; });
+      const anchorTop = anchor?.getBoundingClientRect().top;
       setLanguage(currentLang === "en" ? "el" : "en");
+      if (anchor) window.scrollBy({ top: anchor.getBoundingClientRect().top - anchorTop, behavior: 'instant' });
     });
   });
 }
@@ -725,16 +813,12 @@ document.addEventListener("DOMContentLoaded", () => {
     initMobileMenu();
     return;
   }
-  if (pageType === "service") {
-    // Service guides currently have Greek content only; keep the document language honest.
-    setYear();
-    initMobileMenu();
-    return;
-  }
+  initPhoneReveal();
   if (pageType === "home") {
     initGallery();
     initContactForm();
     initContactReveal();
+    initContactMap();
     initConditionEnquiry();
   }
   setYear();

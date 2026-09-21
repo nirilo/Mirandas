@@ -156,6 +156,10 @@ wrangler pages dev static --port 8787
 
 The Pages preview serves the website and applies `_redirects`; it does not run the separate API Worker. The browser regression script mocks `/api/*`. For manual end-to-end local testing, use a local reverse proxy that sends `/api/*` to port 8788 and all other paths to port 8787. AI evaluation and Turnstile require valid secrets/tokens; automated checks use mocks. A generic static server is useful for file previews but does not reproduce Pages clean URLs or redirects.
 
+## Phone reveal release
+
+Follow [DEPLOYMENT.md](DEPLOYMENT.md) exactly: deploy and configure the backward-compatible API Worker first, verify it, then publish Pages through the existing master-branch integration. Do not push frontend changes before Stage A passes. The new private Worker secret is `PHONE_NUMBER`; never store its value in this repository or Pages. Business JSON-LD deliberately omits the telephone field.
+
 ## Existing Cloudflare deployment
 
 - Pages project **`miranda-52w`** publishes **`static/`**. The existing production Git branch triggers automatic Pages deployments when pushed.
@@ -234,8 +238,8 @@ This project is intentionally simple and fun: no build step, no framework, and n
 - Robots: https://mirandas.gr/robots.txt — public pages/assets are crawlable; `/api/` is disallowed. This is crawler guidance, not access control; admin API authentication is unchanged.
 - Service guides: `/epidiorthosi-tzin`, `/metapoiiseis-rouxon`, `/metapoiiseis-nyfikou` (the `.html` entry URLs continue to work through Pages redirects). All are linked from the homepage, included in the sitemap, and link to contact and relevant services.
 - Every indexable page has a unique Greek title/description, canonical URL and sharing metadata. Existing denim and condition-rater imagery is used where relevant; no new preview-image asset is invented.
-- Homepage JSON-LD uses Schema.org `LocalBusiness`, with the repo's phone (`+30 210 5158929`) and weekday hours (09:00–15:00 and 17:00–21:00, Monday–Friday). The street number supplied by the owner completes the previously partial address: **Αυλώνος 88, Σεπόλια, Αθήνα, Ελλάδα**. No conflicting street number was found. The editorial article uses `BlogPosting` without inferred dates or an unconfirmed author identity.
-- Greek is useful in the initial HTML. Existing Greek/English switching remains on the same URL; therefore there is no hreflang. Proper language SEO later requires separate, stable URLs serving each language directly, with self-canonicals and reciprocal hreflang. The three service guides currently contain Greek only.
+- Homepage JSON-LD uses Schema.org `LocalBusiness`, with weekday hours (09:00–15:00 and 17:00–21:00, Monday–Friday). The street number supplied by the owner completes the previously partial address: **Αυλώνος 88, Σεπόλια, Αθήνα, Ελλάδα**. No conflicting street number was found. The editorial article uses `BlogPosting` without inferred dates or an unconfirmed author identity.
+- Greek is useful in the initial HTML. Existing Greek/English switching remains on the same URL; therefore there is no hreflang. Proper language SEO later requires separate, stable URLs serving each language directly, with self-canonicals and reciprocal hreflang. The three service guides use the same persistent Greek/English selection; Greek remains present in the initial HTML.
 - After a scored condition result, the customer can transfer a concise item/score/issues summary into the contact form. The draft stays in the current tab's `sessionStorage`, is consumed on arrival, and expires after 30 minutes. The customer reviews/edits it and submits through the existing Turnstile-protected form. Photos are not transferred. If browser storage is blocked, the result offers a copy/paste fallback.
 - Contact submissions currently go to the Worker's configured storage; there is no automatic email-notification integration in this repo. Keep a working process for checking enquiries through the authenticated admin endpoints.
 
@@ -282,3 +286,11 @@ The SEO check covers tag nesting, IDs, unique H1s and heading order, metadata, J
 With `wrangler pages dev static --port 8787` running, run `node scripts/check-pages.mjs`. This uses the real Pages local runtime to verify GET/HEAD responses, the exact HTML and asset contents, `.html` and legacy redirects with query strings, and 404 responses. It checks that API paths are not implemented by the static preview; `check-worker.mjs` validates the separate API.
 
 Optional browser regression checks: with `wrangler pages dev static --port 8787` running and an existing Playwright installation plus Chrome, run `node scripts/check-browser.cjs`. If Playwright is installed elsewhere, set `PLAYWRIGHT_MODULE` to its module directory. The script installs nothing and checks five viewport sizes, keyboard/skip-link behavior, language switching, contact retry, condition-summary transfer and blocked storage. It mocks external requests, including the Turnstile widget's dimensions. Both forms use Turnstile's compact size to fit narrow mobile layouts. Real production Turnstile/AI credentials and Cloudflare dashboard rules must still be checked separately.
+
+Additional refinement checks with the local Pages preview running and Playwright available:
+
+```powershell
+node scripts/check-refinements.cjs
+```
+
+This covers both languages, shared navigation, service-guide copy, image ratios, content-link styling, guide links, phone mocks (success, missing secret, invalid response, network failure, retries and repeated clicks), map opt-in, and the no-JavaScript contact fallback. Set `REVIEW_DIR` to a local directory outside `static/` to save review screenshots.

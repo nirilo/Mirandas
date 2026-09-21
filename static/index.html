@@ -26,7 +26,6 @@
   "@id": "https://mirandas.gr/#business",
   "name": "Miranda's",
   "url": "https://mirandas.gr/",
-  "telephone": "+302105158929",
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "Αυλώνος 88",
@@ -217,10 +216,10 @@
 
       <div class="container service-links">
         <h3 class="h3"><span class="lang-inline" data-lang="el" lang="el">Βρείτε την υπηρεσία που χρειάζεστε</span><span class="lang-inline" data-lang="en" lang="en">Find the service you need</span></h3>
-        <ul>
-          <li><a href="/epidiorthosi-tzin"><span class="lang-inline" data-lang="el" lang="el">Επιδιόρθωση τζιν: μπαλώματα και στριφώματα</span><span class="lang-inline" data-lang="en" lang="en">Jeans repairs and hems</span></a></li>
-          <li><a href="/metapoiiseis-rouxon"><span class="lang-inline" data-lang="el" lang="el">Μεταποιήσεις ρούχων: Μήκος, φόδρα, στένεμα</span><span class="lang-inline" data-lang="en" lang="en">Clothing alterations and fitting</span></a></li>
-          <li><a href="/metapoiiseis-nyfikou"><span class="lang-inline" data-lang="el" lang="el">Μεταποιήσεις νυφικού και προετοιμασία για την πρόβα</span><span class="lang-inline" data-lang="en" lang="en">Bridal alterations and fitting preparation</span></a></li>
+        <ul class="guide-pills" role="list">
+          <li><a class="btn guide-link" href="/epidiorthosi-tzin"><span class="lang-inline" data-lang="el" lang="el">Επιδιόρθωση τζιν: μπαλώματα και στριφώματα</span><span class="lang-inline" data-lang="en" lang="en">Jeans repairs and hems</span></a></li>
+          <li><a class="btn guide-link" href="/metapoiiseis-rouxon"><span class="lang-inline" data-lang="el" lang="el">Μεταποιήσεις ρούχων: Μήκος, φόδρα, στένεμα</span><span class="lang-inline" data-lang="en" lang="en">Clothing alterations and fitting</span></a></li>
+          <li><a class="btn guide-link" href="/metapoiiseis-nyfikou"><span class="lang-inline" data-lang="el" lang="el">Μεταποιήσεις νυφικού και προετοιμασία για την πρόβα</span><span class="lang-inline" data-lang="en" lang="en">Bridal alterations and fitting preparation</span></a></li>
         </ul>
       </div>
     </section>
@@ -229,10 +228,14 @@
       <div class="container contact-grid">
         <div>
           <h2 class="h2 scribble-underline" id="contact-heading">Επικοινωνία</h2>
-          <p id="contact-phone"><strong id="contact-phone-label">Τηλέφωνο:</strong> <a class="contact-link" href="tel:+302105158929">+30 210 5158929</a></p>
+          <p id="contact-phone"><strong id="contact-phone-label">Τηλέφωνο:</strong> <span class="phone-reveal" hidden><button type="button" class="btn contact-reveal" data-phone-reveal aria-describedby="contact-phone-status">Εμφάνιση τηλεφώνου</button><span class="phone-status micro muted" id="contact-phone-status" role="status" aria-live="polite" aria-atomic="true"></span></span></p>
           <p id="contact-email"><strong id="contact-email-label">Email:</strong> <button type="button" class="btn contact-reveal" id="reveal-email">Στείλτε email</button></p>
           <p id="contact-address"><strong>Διεύθυνση:</strong> Αυλώνος 88, Σεπόλια, Αθήνα, Ελλάδα</p>
-          <p><a href="https://www.google.com/maps/search/?api=1&amp;query=%CE%91%CF%85%CE%BB%CF%8E%CE%BD%CE%BF%CF%82%2088%2C%20%CE%91%CE%B8%CE%AE%CE%BD%CE%B1%2C%20Greece"><span class="lang-inline" data-lang="el" lang="el">Οδηγίες για Αυλώνος 88, Αθήνα</span><span class="lang-inline" data-lang="en" lang="en">Directions to 88 Avlonos, Athens</span></a></p>
+          <div class="location-preview">
+            <button class="btn contact-reveal map-toggle" type="button" id="map-toggle" aria-expanded="false" aria-controls="contact-map" hidden><span class="lang-inline" data-lang="el" lang="el">Προβολή χάρτη · Αυλώνος 88</span><span class="lang-inline" data-lang="en" lang="en">Show map · 88 Avlonos</span></button>
+            <div id="contact-map" hidden></div>
+          </div>
+          <p><a class="content-link" href="https://www.google.com/maps/search/?api=1&amp;query=%CE%91%CF%85%CE%BB%CF%8E%CE%BD%CE%BF%CF%82%2088%2C%20%CE%91%CE%B8%CE%AE%CE%BD%CE%B1%2C%20Greece"><span class="lang-inline" data-lang="el" lang="el">Οδηγίες για Αυλώνος 88, Αθήνα</span><span class="lang-inline" data-lang="en" lang="en">Directions to 88 Avlonos, Athens</span></a></p>
           <a class="btn btn-secondary" id="back-top" href="#hero">Επιστροφή στην αρχή</a>
         </div>
 

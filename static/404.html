@@ -7,11 +7,62 @@
   <title>Η σελίδα δεν βρέθηκε | Μιράντα</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
-<body>
-  <main id="main-content" tabindex="-1" class="container">
-    <h1>Η σελίδα δεν βρέθηκε</h1>
-    <p>Ο σύνδεσμος μπορεί να έχει αλλάξει.</p>
-    <p><a href="/">Επιστροφή στην αρχική σελίδα</a></p>
+<body data-page="not-found">
+  <a class="skip-link" href="#main-content">Μετάβαση στο περιεχόμενο / Skip to content</a>
+  <header class="nav">
+    <div class="container nav-row">
+      <a class="brand" href="/#hero">
+        <picture>
+          <!-- <source media="(max-width: 767.98px)" srcset="assets/logo/mobile_logo.svg"> -->
+          <img class="brand-logo" src="/assets/logo/thereallogo.svg" alt="Miranda's">
+        </picture>
+      </a>
+      <button class="menu-toggle" type="button" id="menu-toggle" aria-label="Άνοιγμα μενού" aria-controls="mobile-menu" aria-expanded="false">
+         <span class="menu-icon" aria-hidden="true"></span>
+      </button>
+      <nav class="links" aria-label="Primary">
+        <a id="nav-home" href="/#hero">Αρχική</a>
+        <a id="nav-about" href="/#about">Σχετικά</a>
+        <a id="nav-work" href="/#work">Δουλειές</a>
+        <a id="nav-contact" href="/#contact">Επικοινωνία</a>
+        <a id="nav-stories" href="/garment-stories">
+          <span class="lang-inline" data-lang="en" lang="en">Garment Stories</span>
+          <span class="lang-inline" data-lang="el" lang="el">Μικρό περιοδικό</span>
+        </a>
+        <a href="/condition" id="nav-condition">Αξιολόγηση υφάσματος</a>
+      </nav>
+      <button class="lang-toggle" type="button" id="lang-toggle" aria-label="Switch to English / Αλλαγή σε ελληνικά">EN</button>
+    </div>
+  </header>
+  <div class="menu-overlay" id="menu-overlay" hidden></div>
+  <div class="mobile-menu" id="mobile-menu" hidden role="dialog" aria-modal="true" aria-label="Menu">
+    <nav aria-label="Mobile Primary">
+      <a id="mobile-nav-home" href="/#hero">Αρχική</a>
+      <a id="mobile-nav-about" href="/#about">Σχετικά</a>
+      <a id="mobile-nav-work" href="/#work">Δουλειές</a>
+      <a id="mobile-nav-contact" href="/#contact">Επικοινωνία</a>
+      <a href="/garment-stories" id="mobile-nav-stories">
+        <span class="lang-inline" data-lang="en" lang="en">Garment Stories</span>
+        <span class="lang-inline" data-lang="el" lang="el">Μικρό περιοδικό</span>
+      </a>
+      <a href="/condition" id="mobile-nav-condition">Αξιολόγηση υφάσματος</a>
+      <button class="lang-toggle mobile-lang-toggle" type="button" id="mobile-lang-toggle" aria-label="Switch to English / Αλλαγή σε ελληνικά">EN</button>
+    </nav>
+  </div>
+  <main id="main-content" tabindex="-1" class="container section content-links">
+    <h1><span class="lang-inline" data-lang="el" lang="el">Η σελίδα δεν βρέθηκε</span><span class="lang-inline" data-lang="en" lang="en">Page not found</span></h1>
+    <p><span class="lang-inline" data-lang="el" lang="el">Ο σύνδεσμος μπορεί να έχει αλλάξει.</span><span class="lang-inline" data-lang="en" lang="en">The link may have changed.</span></p>
+    <p><a href="/"><span class="lang-inline" data-lang="el" lang="el">Επιστροφή στην αρχική σελίδα</span><span class="lang-inline" data-lang="en" lang="en">Back to the homepage</span></a></p>
   </main>
+<footer class="footer">
+    <div class="container footer-row">
+      <small id="footer-note">&copy; <span id="year"></span> Miranda's - Δημιουργικές μεταποιήσεις & επιδιορθώσεις</small>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="/#about" id="footer-about">Σχετικά</a>
+        <a href="/#contact" id="footer-contact">Επικοινωνία</a>
+      </nav>
+    </div>
+  </footer>
+  <script src="/main.js" defer></script>
 </body>
 </html>
