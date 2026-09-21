@@ -32,9 +32,26 @@ const routes = ['/', '/garment-stories', '/garment-stories-ai-old-clothes', '/co
     });
     const page = await context.newPage();
     page.on('pageerror', e => errors.push(e.message));
+    const backStyle = el => {
+      const style = getComputedStyle(el);
+      return Object.fromEntries(['fontFamily', 'fontSize', 'fontWeight', 'color', 'backgroundColor',
+        'borderBottom', 'borderRadius', 'boxShadow', 'padding', 'textDecorationLine'].map(key => [key, style[key]]));
+    };
+    await page.goto(origin + '/garment-stories-ai-old-clothes');
+    const articleBack = page.locator('.story-back');
+    const articleBackStyle = await articleBack.evaluate(backStyle);
+    await articleBack.hover();
+    const articleBackHoverStyle = await articleBack.evaluate(backStyle);
+    const columnBounds = el => {
+      const box = el.getBoundingClientRect();
+      return { x: box.x, width: box.width };
+    };
     let navReference;
     for (const width of [320, 390, 768, 1280]) {
       await page.setViewportSize({ width, height: 900 });
+      await page.goto(origin + '/garment-stories-ai-old-clothes');
+      const referenceCard = await page.locator('.story-letter').evaluate(columnBounds);
+      const referenceBody = await page.locator('.story-body').evaluate(columnBounds);
       for (const route of routes) {
         await page.goto(origin + route);
         // Exercise native lazy loading before checking ratios or taking full-page screenshots.
@@ -65,9 +82,18 @@ const routes = ['/', '/garment-stories', '/garment-stories-ai-old-clothes', '/co
           const blue = await page.locator('main a').evaluateAll(links => links.filter(a => a.getClientRects().length && ['rgb(0, 0, 238)', 'rgb(85, 26, 139)'].includes(getComputedStyle(a).color)).map(a => a.getAttribute('href')));
           assert.deepEqual(blue, [], `${route}: unstyled content links`);
           if (guides.includes(route)) {
+            assert.deepEqual(await page.locator('.story-letter').evaluate(columnBounds), referenceCard,
+              `Guide card matches the existing article: ${route}/${width}/${lang}`);
+            assert.deepEqual(await page.locator('.service-page').evaluate(columnBounds), referenceBody,
+              `Guide text keeps the existing reading column: ${route}/${width}/${lang}`);
             assert.deepEqual(await page.locator('.links a[aria-current]').evaluateAll(links => links.map(a => a.id)), ['nav-stories']);
             assert.deepEqual(await page.locator('#mobile-menu a[aria-current]').evaluateAll(links => links.map(a => a.id)), ['mobile-nav-stories']);
             const back = page.locator('.guide-back');
+            assert.equal(await back.getAttribute('class'), 'story-back guide-back');
+            await page.mouse.move(0, 0);
+            assert.deepEqual(await back.evaluate(backStyle), articleBackStyle, 'Reuse exact article back-link styling');
+            await back.hover();
+            assert.deepEqual(await back.evaluate(backStyle), articleBackHoverStyle, 'Reuse exact article back-link hover styling');
             assert.equal(await back.getAttribute('href'), 'https://mirandas.gr/garment-stories');
             assert.equal(await back.innerText(), lang === 'en' ? 'Back to Garment Stories' : 'Πίσω στο Μικρό περιοδικό');
             assert.equal(await back.evaluate(el => el.getBoundingClientRect().top < document.querySelector('h1').getBoundingClientRect().top), true);
@@ -79,15 +105,40 @@ const routes = ['/', '/garment-stories', '/garment-stories-ai-old-clothes', '/co
               return img.complete && img.naturalWidth > 0 && Math.abs(box.width / box.height - img.naturalWidth / img.naturalHeight) < .01;
             })), true, `Loaded guide images keep their ratio: ${route}/${width}/${lang}`);
           }
-          for (const pill of await page.locator('.guide-pills .guide-link, .guide-back').all()) {
+          for (const heading of await page.locator('.guide-heading').all()) {
+            assert.equal(await heading.evaluate(el => {
+              const style = getComputedStyle(el);
+              return style.fontFamily === getComputedStyle(document.body).fontFamily &&
+                style.fontWeight === '700' && style.color === 'rgb(31, 31, 31)';
+            }), true, 'Guide headings use the normal dark, bold website type');
+          }
+          for (const pill of await page.locator('.guide-pills .guide-link').all()) {
             assert.equal(await pill.evaluate(el => {
               const box = el.getBoundingClientRect(), style = getComputedStyle(el);
-              return box.height >= 44 && box.width <= innerWidth && el.scrollWidth <= el.clientWidth + 1 &&
-                style.fontWeight === '400' && style.boxShadow === 'none';
+              return box.height >= 36 && box.width <= innerWidth && el.scrollWidth <= el.clientWidth + 1 &&
+                style.fontSize === '13px' && style.fontWeight === '400' && style.boxShadow === 'none' &&
+                style.borderStyle === 'dashed' && style.padding === '6px 11px';
             }), true, `Compact, readable touch target: ${route}/${width}/${lang}`);
             await pill.focus();
             await page.keyboard.press('Shift');
             assert.equal(await pill.evaluate(el => el.matches(':focus-visible') && getComputedStyle(el).outlineWidth === '2px'), true);
+          }
+          for (const button of await page.locator('.guide-pills .guide-link, .contact-reveal').all()) {
+            await page.mouse.move(0, 0);
+            assert.equal(await button.evaluate(el => getComputedStyle(el).backgroundColor),
+              await button.evaluate(el => el.matches('.contact-reveal')) ? 'rgb(227, 237, 244)' : 'rgb(255, 250, 243)');
+            assert.equal(await button.evaluate(el => getComputedStyle(el).textDecorationLine), 'none');
+            await button.hover();
+            assert.equal(await button.evaluate(el => getComputedStyle(el).textDecorationLine), 'none');
+            if (await button.evaluate(el => el.matches('.guide-link'))) {
+              assert.equal(await button.evaluate(el => new DOMMatrixReadOnly(getComputedStyle(el).transform).m42), -1);
+              assert.equal(await button.evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(245, 234, 219)');
+            }
+            await button.focus();
+            await page.keyboard.press('Shift');
+            await page.mouse.move(0, 0);
+            assert.equal(await button.evaluate(el => getComputedStyle(el).textDecorationLine), 'none');
+            assert.equal(await button.evaluate(el => el.matches(':focus-visible') && getComputedStyle(el).outlineStyle !== 'none'), true);
           }
           if (process.env.REVIEW_DIR && [390,1280].includes(width)) {
             fs.mkdirSync(process.env.REVIEW_DIR, { recursive: true });
