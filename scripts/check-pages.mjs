@@ -4,7 +4,8 @@ import { readFile, readdir } from 'node:fs/promises';
 
 const origin = 'http://127.0.0.1:8787';
 const root = new URL('../static/', import.meta.url);
-const pages = (await readdir(root)).filter(name => name.endsWith('.html') && name !== '404.html');
+const pages = (await readdir(root, { recursive: true })).map(name => name.replaceAll('\\', '/'))
+  .filter(name => name.endsWith('.html') && name !== '404.html');
 const redirects = (await readFile(new URL('_redirects', root), 'utf8'))
   .split(/\r?\n/).filter(line => line.trim() && !line.startsWith('#'))
   .map(line => line.split(/\s+/));
@@ -27,7 +28,26 @@ for (const method of ['GET', 'HEAD']) {
     const response = await fetch(origin + from + '?source=legacy', { method, redirect: 'manual' });
     assert.equal(response.status, Number(status), from);
     assert.equal(new URL(response.headers.get('location'), origin).href, origin + to + '?source=legacy');
+    const destination = await fetch(origin + to + '?source=legacy', { method, redirect: 'manual' });
+    assert.equal(destination.status, 200, `No redirect chain: ${from}`);
     checks++;
+  }
+  for (const slug of ['epidiorthosi-tzin', 'metapoiiseis-rouxon', 'metapoiiseis-nyfikou']) {
+    const target = '/garment-stories/' + slug;
+    for (const old of ['/' + slug, '/' + slug + '/', '/' + slug + '.html']) {
+      const response = await fetch(origin + old, { method, redirect: 'manual' });
+      assert.equal(response.status, 301, old);
+      assert.equal(new URL(response.headers.get('location'), origin).href, origin + target);
+      checks++;
+    }
+    const html = await readFile(new URL('garment-stories/' + slug + '.html', root), 'utf8');
+    const assets = [...html.matchAll(/(?:src|href)="(\/(?:assets\/[^\"]+|styles\.css|main\.js))"/g)].map(match => match[1]);
+    for (const asset of new Set(assets)) {
+      const response = await fetch(origin + asset, { method, redirect: 'manual' });
+      assert.equal(response.status, 200, `${target}: ${asset}`);
+      if (method === 'GET') assert.deepEqual(Buffer.from(await response.arrayBuffer()), await readFile(new URL(asset.slice(1), root)));
+      checks++;
+    }
   }
   for (const [name, type] of [['robots.txt', 'text/plain'], ['sitemap.xml', 'application/xml'], ['styles.css', 'text/css'], ['main.js', 'javascript'], ['assets/logo/thereallogo.svg', 'image/svg+xml'], ['assets/images/denim_after.webp', 'image/webp']]) {
     const response = await fetch(origin + '/' + name, { method, redirect: 'manual' });

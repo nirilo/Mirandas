@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const origin = 'http://127.0.0.1:8787';
-const guides = ['/epidiorthosi-tzin', '/metapoiiseis-rouxon', '/metapoiiseis-nyfikou'];
+const guides = ['/garment-stories/epidiorthosi-tzin', '/garment-stories/metapoiiseis-rouxon', '/garment-stories/metapoiiseis-nyfikou'];
 const fixturePhone = '+1 202 555 0100'; // Synthetic; never the production number.
 const routes = ['/', '/garment-stories', '/garment-stories-ai-old-clothes', '/condition', ...guides, '/missing'];
 
@@ -57,6 +57,7 @@ const routes = ['/', '/garment-stories', '/garment-stories-ai-old-clothes', '/co
             } else await page.locator('#lang-toggle').click();
           }
           assert.equal(await page.locator('html').getAttribute('lang'), lang);
+          assert.equal(new URL(page.url()).pathname, route, 'Language change must keep the current URL');
           assert.equal(await page.evaluate(() => localStorage.getItem('miranda-lang')), lang);
           assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false, `${route}/${width}/${lang} overflow`);
           assert.equal(await page.locator('#nav-home').innerText(), lang === 'en' ? 'Home' : 'Αρχική');
@@ -64,17 +65,44 @@ const routes = ['/', '/garment-stories', '/garment-stories-ai-old-clothes', '/co
           const blue = await page.locator('main a').evaluateAll(links => links.filter(a => a.getClientRects().length && ['rgb(0, 0, 238)', 'rgb(85, 26, 139)'].includes(getComputedStyle(a).color)).map(a => a.getAttribute('href')));
           assert.deepEqual(blue, [], `${route}: unstyled content links`);
           if (guides.includes(route)) {
+            assert.deepEqual(await page.locator('.links a[aria-current]').evaluateAll(links => links.map(a => a.id)), ['nav-stories']);
+            assert.deepEqual(await page.locator('#mobile-menu a[aria-current]').evaluateAll(links => links.map(a => a.id)), ['mobile-nav-stories']);
+            const back = page.locator('.guide-back');
+            assert.equal(await back.getAttribute('href'), 'https://mirandas.gr/garment-stories');
+            assert.equal(await back.innerText(), lang === 'en' ? 'Back to Garment Stories' : 'Πίσω στο Μικρό περιοδικό');
+            assert.equal(await back.evaluate(el => el.getBoundingClientRect().top < document.querySelector('h1').getBoundingClientRect().top), true);
             const visible = await page.locator('article').innerText();
             assert.match(visible, lang === 'en' ? /Send photos for an assessment/ : /Στείλτε φωτογραφίες για εκτίμηση/);
             if (lang === 'en') assert.doesNotMatch(visible, /[Α-ω]/);
             assert.equal(await page.locator('article img').evaluateAll(imgs => imgs.every(img => {
               const box = img.getBoundingClientRect();
-              return !img.complete || !img.naturalWidth || Math.abs(box.width / box.height - img.naturalWidth / img.naturalHeight) < .01;
-            })), true);
+              return img.complete && img.naturalWidth > 0 && Math.abs(box.width / box.height - img.naturalWidth / img.naturalHeight) < .01;
+            })), true, `Loaded guide images keep their ratio: ${route}/${width}/${lang}`);
+          }
+          for (const pill of await page.locator('.guide-pills .guide-link, .guide-back').all()) {
+            assert.equal(await pill.evaluate(el => {
+              const box = el.getBoundingClientRect(), style = getComputedStyle(el);
+              return box.height >= 44 && box.width <= innerWidth && el.scrollWidth <= el.clientWidth + 1 &&
+                style.fontWeight === '400' && style.boxShadow === 'none';
+            }), true, `Compact, readable touch target: ${route}/${width}/${lang}`);
+            await pill.focus();
+            await page.keyboard.press('Shift');
+            assert.equal(await pill.evaluate(el => el.matches(':focus-visible') && getComputedStyle(el).outlineWidth === '2px'), true);
           }
           if (process.env.REVIEW_DIR && [390,1280].includes(width)) {
             fs.mkdirSync(process.env.REVIEW_DIR, { recursive: true });
-            await page.screenshot({ path: path.join(process.env.REVIEW_DIR, `${route === '/' ? 'home' : route.slice(1)}-${width}-${lang}.png`), fullPage: true, animations: 'disabled' });
+            await page.screenshot({ path: path.join(process.env.REVIEW_DIR, `${route === '/' ? 'home' : route.slice(1).replaceAll('/', '-')}-${width}-${lang}.png`), fullPage: true, animations: 'disabled' });
+          }
+          if (guides.includes(route)) {
+            await page.locator('.guide-back').click();
+            await page.waitForURL('https://mirandas.gr/garment-stories');
+            await page.goto(origin + route);
+            // The back-link check reloads the guide; load its lazy images again for the next language.
+            for (const img of await page.locator('img[loading="lazy"]').all()) {
+              await img.scrollIntoViewIfNeeded();
+              await img.evaluate(el => el.decode());
+            }
+            await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
           }
         }
       }
@@ -176,6 +204,8 @@ const routes = ['/', '/garment-stories', '/garment-stories-ai-old-clothes', '/co
       await fallback.goto(origin + route);
       assert.match(await fallback.locator('h1').innerText(), /Σεπόλια/);
       assert.equal(await fallback.locator('[data-phone-reveal]').isVisible(), false);
+      assert.equal(await fallback.locator('#nav-stories').getAttribute('aria-current'), 'page');
+      assert.equal(await fallback.locator('.guide-back').innerText(), 'Πίσω στο Μικρό περιοδικό');
     }
     await fallback.goto(origin + '/');
     assert.equal(await fallback.locator('#contact-map iframe').isVisible(), true);

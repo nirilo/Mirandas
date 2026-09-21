@@ -56,7 +56,7 @@ for (const host of ['mirandas.gr', 'www.mirandas.gr']) {
 // Direct non-API calls must never serve assets or redirect either hostname.
 for (const host of ['mirandas.gr', 'www.mirandas.gr']) {
   for (const protocol of ['https:', 'http:']) {
-    for (const route of ['/', '/index.html', '/index', '/condition', '/condition/', '/condition.html', '/robots.txt', '/sitemap.xml', '/styles.css', '/main.js', '/assets/logo/thereallogo.svg', '/epidiorthosi-tzin.html', '/metapoiiseis-rouxon.html', '/metapoiiseis-nyfikou.html', '/missing.html', '/api/missing']) {
+    for (const route of ['/', '/index.html', '/index', '/condition', '/condition/', '/condition.html', '/robots.txt', '/sitemap.xml', '/styles.css', '/main.js', '/assets/logo/thereallogo.svg', '/epidiorthosi-tzin.html', '/metapoiiseis-rouxon.html', '/metapoiiseis-nyfikou.html', '/garment-stories/epidiorthosi-tzin', '/garment-stories/metapoiiseis-rouxon', '/garment-stories/metapoiiseis-nyfikou', '/missing.html', '/api/missing']) {
       for (const method of ['GET', 'HEAD']) {
         const response = await call(`${protocol}//${host}${route}?source=old`, { method });
         expect(response.status, 404);

@@ -50,8 +50,8 @@ class Page(HTMLParser):
             self.jsonld.append(json.loads(self.ld))
             self.ld = None
 
-pages = {p.name: Page(p) for p in ROOT.glob('*.html') if p.name != '404.html'}
-urls = {name: ORIGIN + ('/' if name == 'index.html' else '/' + Path(name).stem) for name in pages}
+pages = {p.relative_to(ROOT).as_posix(): Page(p) for p in ROOT.rglob('*.html') if p.name != '404.html'}
+urls = {name: ORIGIN + ('/' if name == 'index.html' else '/' + Path(name).with_suffix('').as_posix()) for name in pages}
 not_found = Page(ROOT / '404.html')
 assert any(tag == 'meta' and a.get('name') == 'robots' and a.get('content') == 'noindex' for tag, a in not_found.nodes)
 sitemap = ET.parse(ROOT / 'sitemap.xml')
@@ -118,14 +118,25 @@ for name, page in pages.items():
     assert not any(tag == 'a' and a.get('href', '').startswith('tel:') for tag, a in page.nodes), (name, 'Phone must be revealed only after interaction')
     assert {'lang-toggle', 'mobile-lang-toggle'} <= page.ids, (name, 'Shared language controls missing')
 
-services = ['epidiorthosi-tzin.html', 'metapoiiseis-rouxon.html', 'metapoiiseis-nyfikou.html']
+slugs = ['epidiorthosi-tzin', 'metapoiiseis-rouxon', 'metapoiiseis-nyfikou']
+services = ['garment-stories/' + slug + '.html' for slug in slugs]
+service_urls = {'/' + Path(name).with_suffix('').as_posix() for name in services}
 home_links = {a.get('href') for tag, a in pages['index.html'].nodes if tag == 'a'}
-assert {'/' + Path(name).stem for name in services} <= home_links, 'Orphan service page'
+assert service_urls <= home_links, 'Orphan service page'
 assert all(urls[name] in locs for name in services)
 story_links = {a.get('href') for tag, a in pages['garment-stories.html'].nodes if tag == 'a'}
-assert {'/' + Path(name).stem for name in services} <= story_links, 'Journal guide links missing'
+assert service_urls <= story_links, 'Journal guide links missing'
 for name in services:
     assert any(a.get('data-lang') == 'en' for _, a in pages[name].nodes), (name, 'English guide content missing')
+    assert not (ROOT / Path(name).name).exists(), (name, 'Duplicate old guide file')
+    back = [a for tag, a in pages[name].nodes if tag == 'a' and 'guide-back' in a.get('class', '').split()]
+    assert len(back) == 1 and back[0]['href'] == ORIGIN + '/garment-stories', (name, 'Back pill destination')
+    for nav_id in ['nav-stories', 'mobile-nav-stories']:
+        assert any(a.get('id') == nav_id and a.get('aria-current') == 'page' for _, a in pages[name].nodes), (name, nav_id)
+    for tag, a in pages[name].nodes:
+        for key in ['href', 'src', 'srcset']:
+            ref = a.get(key, '')
+            assert not ref or ref.startswith(('/', '#', 'https://')), (name, 'Fragile relative reference', ref)
 assert 'phoneParts' not in (ROOT / 'main.js').read_text(encoding='utf-8'), 'Do not embed phone fragments in client JavaScript'
 for config in ['wrangler.toml.example', 'wrangler.toml']:
     path = ROOT.parent / config
@@ -143,6 +154,10 @@ for source, destination, status in redirects:
     assert source != destination and not source.startswith('/api/')
     assert ORIGIN + destination in urls.values(), ('Noncanonical redirect target', destination)
 assert ['/condition/', '/condition', '301'] in redirects
+for slug in slugs:
+    target = '/garment-stories/' + slug
+    for source in ['/' + slug, '/' + slug + '/', '/' + slug + '.html', target + '/']:
+        assert [source, target, '301'] in redirects, ('Missing direct guide redirect', source)
 for stylesheet in ROOT.glob('*.css'):
     for ref in re.findall(r'url\([\'"]?([^\)\'\"]+)', stylesheet.read_text(encoding='utf-8')):
         if not ref.startswith(('data:', 'http:', 'https:')):

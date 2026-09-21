@@ -178,9 +178,9 @@ Expected public responses after the next authorized Pages deployment:
 | `/` | 200, `static/index.html` |
 | `/robots.txt` | 200, `static/robots.txt` |
 | `/sitemap.xml` | 200, `static/sitemap.xml` |
-| `/epidiorthosi-tzin.html` | 308 to `/epidiorthosi-tzin`, then 200 |
-| `/metapoiiseis-rouxon.html` | 308 to `/metapoiiseis-rouxon`, then 200 |
-| `/metapoiiseis-nyfikou.html` | 308 to `/metapoiiseis-nyfikou`, then 200 |
+| `/epidiorthosi-tzin`, `/epidiorthosi-tzin/`, `/epidiorthosi-tzin.html` | 301 directly to `/garment-stories/epidiorthosi-tzin`, then 200 |
+| `/metapoiiseis-rouxon`, `/metapoiiseis-rouxon/`, `/metapoiiseis-rouxon.html` | 301 directly to `/garment-stories/metapoiiseis-rouxon`, then 200 |
+| `/metapoiiseis-nyfikou`, `/metapoiiseis-nyfikou/`, `/metapoiiseis-nyfikou.html` | 301 directly to `/garment-stories/metapoiiseis-nyfikou`, then 200 |
 | `/condition` | 200, `static/condition.html` (existing legacy URL) |
 | `/condition.html` | 308 to `/condition`, then 200 |
 | `/condition/` | 301 to `/condition`, then 200 |
@@ -236,7 +236,7 @@ This project is intentionally simple and fun: no build step, no framework, and n
 - Canonical hostname: `https://mirandas.gr`; homepage: `/`. Canonical tags, Open Graph URLs, JSON-LD and sitemap URLs use the apex and native Pages extensionless paths. Internal page links use the same canonical paths relative to the current origin, so Pages previews and same-origin form submissions work. Both hostnames currently serve the site; canonical tags consolidate the preferred hostname without requiring a redirect. No hostname redirect is implemented in the API Worker or `_redirects`.
 - Sitemap: https://mirandas.gr/sitemap.xml — all seven indexable HTML pages, without invented modification dates.
 - Robots: https://mirandas.gr/robots.txt — public pages/assets are crawlable; `/api/` is disallowed. This is crawler guidance, not access control; admin API authentication is unchanged.
-- Service guides: `/epidiorthosi-tzin`, `/metapoiiseis-rouxon`, `/metapoiiseis-nyfikou` (the `.html` entry URLs continue to work through Pages redirects). All are linked from the homepage, included in the sitemap, and link to contact and relevant services.
+- Service guides: `/garment-stories/epidiorthosi-tzin`, `/garment-stories/metapoiiseis-rouxon`, `/garment-stories/metapoiiseis-nyfikou` (the old root URLs, trailing-slash variants and `.html` entry URLs redirect directly with 301; nested `.html` URLs use the native Pages redirect). All are linked from the homepage, included in the sitemap, and link to contact and relevant services.
 - Every indexable page has a unique Greek title/description, canonical URL and sharing metadata. Existing denim and condition-rater imagery is used where relevant; no new preview-image asset is invented.
 - Homepage JSON-LD uses Schema.org `LocalBusiness`, with weekday hours (09:00–15:00 and 17:00–21:00, Monday–Friday). The street number supplied by the owner completes the previously partial address: **Αυλώνος 88, Σεπόλια, Αθήνα, Ελλάδα**. No conflicting street number was found. The editorial article uses `BlogPosting` without inferred dates or an unconfirmed author identity.
 - Greek is useful in the initial HTML. Existing Greek/English switching remains on the same URL; therefore there is no hreflang. Proper language SEO later requires separate, stable URLs serving each language directly, with self-canonicals and reciprocal hreflang. The three service guides use the same persistent Greek/English selection; Greek remains present in the initial HTML.

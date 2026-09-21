@@ -30,7 +30,7 @@ const origin = 'http://127.0.0.1:8787';
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
-    const routes = ['/', '/condition.html', '/garment-stories.html', '/garment-stories-ai-old-clothes.html', '/epidiorthosi-tzin.html', '/metapoiiseis-rouxon.html', '/metapoiiseis-nyfikou.html'];
+    const routes = ['/', '/condition.html', '/garment-stories.html', '/garment-stories-ai-old-clothes.html', '/garment-stories/epidiorthosi-tzin.html', '/garment-stories/metapoiiseis-rouxon.html', '/garment-stories/metapoiiseis-nyfikou.html'];
     for (const width of [320, 360, 390, 768, 1280]) {
       await page.setViewportSize({ width, height: 900 });
       for (const route of routes) {
