@@ -361,18 +361,17 @@ body.menu-open .mobile-menu{
 .service-links{padding-top:clamp(2.5rem,5vw,4rem); padding-bottom:2rem;}
 .guide-pills{display:flex; flex-wrap:wrap; gap:.75rem; list-style:none; margin:1rem 0 0; padding:0;}
 .guide-pills li{margin:0; max-width:100%;}
-.guide-pills .guide-link{background:var(--card); color:var(--ink); border:1px solid #e5dccf; font-size:.95rem; font-weight:600; white-space:normal;}
+.guide-pills .guide-link{display:inline-flex; align-items:center; min-height:44px; padding:.5rem .85rem; background:var(--card); color:var(--ink); border:1px solid #e5dccf; font-size:.9rem; font-weight:400; line-height:1.5; white-space:normal;}
 .guide-pills .guide-link:hover{border-color:var(--accent-2); background:var(--paper);}
 #projects > .container > .h2{margin-bottom:1rem;}
 #projects .service-links{padding-top:clamp(2.5rem,4vw,3rem); padding-bottom:.5rem;}
-#projects .service-links > .h3{font-size:1.1rem; line-height:1.5;}
+.guide-heading.hand{font-size:1.35rem; font-weight:400; line-height:1.35; color:#b04a32; text-wrap:balance;}
 #projects .guide-pills{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr)); gap:.75rem 1rem; margin-top:.75rem;}
 #projects .guide-pills li{min-width:0;}
-#projects .guide-pills .guide-link{display:flex; align-items:center; width:100%; height:100%; min-height:44px; padding:.65rem 1rem; background:rgba(181,155,128,.12); border:0; box-shadow:none; line-height:1.5;}
+#projects .guide-pills .guide-link{display:flex; width:100%; height:100%; background:rgba(181,155,128,.12); border:0; box-shadow:none;}
 #projects .guide-pills .guide-link:hover{background:rgba(181,155,128,.22); filter:none; text-decoration:underline; text-underline-offset:.2em;}
 .guide-link:focus-visible,.content-link:focus-visible,.phone-reveal a:focus-visible,[data-phone-reveal]:focus-visible{outline:2px solid #a43f22; outline-offset:4px;}
 .story-guides{margin-top:2.5rem; padding-top:1.5rem; border-top:1px solid #e5dccf;}
-.story-guides .h3{font-size:1.1rem;}
 .phone-status{display:block; max-width:38ch; margin-top:.35rem;}
 .phone-status:empty{display:none;}
 .phone-reveal[data-state="ready"] .phone-status{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%);}
